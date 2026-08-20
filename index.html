@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=article-9" />
+    <link rel="stylesheet" href="styles.css?v=article-10" />
     <script>
       window.MathJax = {
         tex: {
@@ -50,6 +50,7 @@
         <p class="article-lede">We had no previous chip design knowledge, so we decided to figure it out ourselves and see how far we could get! We wanted to demystify AI hardware by building a fully functional LPU from scratch.</p>
 
         <section>
+          <p class="section-label">01 / Motivation</p>
           <h2>What was our goal with this project?</h2>
           <p>We had no guide or course that teaches chip design at our university. We had taken a digital logic course, but were disappointed with the fact that the most complex project we did was building a full adder in Quartus using logic blocks, not even RTL! Therefore, we decided to challenge ourselves to dive deep into ML hardware and learn as much as we could on our own. We wanted to prove that high school math (like \(y = mx + b\)) and basic logic circuits are enough to help anyone understand how modern AI hardware works.</p>
           <p>We also realized that we had been outsourcing our thinking and understanding to AI a lot recently, so we wanted to build something where we had ownership over in terms of our own thinking and design. We acknowledge that AI is used vastly in today’s age to accelerate processes, but we wanted to use it in a manner where were not outsourcing our learning or understanding.</p>
@@ -59,6 +60,7 @@
         </section>
 
         <section>
+          <p class="section-label">02 / Foundations</p>
           <h2>Background on AI accelerators</h2>
           <p>So what is an LPU? To answer that, we should explain what isn’t an LPU.</p>
           <p>CPUs were never designed with arithmetic workloads in mind. They were designed for general-purpose processing and executing the functions that make a computer function. They also work sequentially, completing tasks one by one. Moreover, a lot of a CPU’s silicon is dedicated to memory cache hierarchies and out-of-order logic, it becomes a bottleneck for ML arithmetic workloads, and that is where GPUs first came into play.</p>
@@ -90,6 +92,7 @@ assign sum = a + b;
         </section>
 
         <section>
+          <p class="section-label">03 / The idea</p>
           <h2>What is an LPU?</h2>
           <p>LPU stands for Language Processing Unit. The LPU differs from a traditional chip in many ways, but the overarching idea is “deterministic execution”. The term deterministic execution refers to the idea that the chip does not know what to do, except what it is told to do, and the result of said execution must have predictable timing. If an operation is executed multiple times, it should take the same number of clock cycles for each execution. Hardware is dumb. A chip does not think. It is just a collection of microscopic physical switches (transistors) arranged to route signals. The philosophy behind the design of the LPU strips complex control logic off the chip and moves all the intelligence to a piece of software called the compiler.</p>
 
@@ -107,6 +110,7 @@ assign sum = a + b;
         </section>
 
         <section id="mxm">
+          <p class="section-label">04 / Matrix execution</p>
           <h2>MXM</h2>
           <p>Over 90% of arithmetic work in a typical transformer can be expressed as matrix multiplications (matmul), making matmul acceleration very critical for modern AI accelerators. Inside the LPU, the Matrix Execution Module (MXM) is responsible for accelerating these matmuls.</p>
           <p>Aside from accelerating matmuls, it should also fit the philosophy of the LPU; it should be deterministic. The term Deterministic refers to the idea that the timing of every matmul must be predictable, we should know exactly how many clock cycles the MXM will take to finish every matmul. To meet this criteria we decided to make the hardware as dumb as possible.</p>
@@ -227,6 +231,6 @@ assign sum = a + b;
         </section>
       </article>
     </main>
-    <script src="script.js?v=article-7"></script>
+    <script src="script.js?v=article-10"></script>
   </body>
 </html>
