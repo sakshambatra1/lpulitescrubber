@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#effaff" />
+    <meta name="description" content="LPU Lite: a language processing unit built from first principles." />
+    <title>LPU Lite</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css?v=article-9" />
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [["\\(", "\\)"]],
+          displayMath: [["\\[", "\\]"]],
+        },
+        svg: { fontCache: "global" },
+      };
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  </head>
+  <body>
+    <main>
+      <section class="hero" aria-labelledby="page-title">
+        <header class="hero-copy">
+          <h1 id="page-title">LPU Lite</h1>
+          <p>a lite language processing unit by Saksham Batra, Michael Trbovic, and Arjun Harinath.</p>
+        </header>
+
+        <div class="slideshow main-slideshow" data-slideshow="main">
+          <button class="slide-stage wide-stage" type="button" data-action="next" aria-label="Next frame">
+            <img src="main_animation/LPU-Anim.png" alt="LPU Lite forward-pass architecture, frame 1" draggable="false" />
+          </button>
+          <p class="animation-caption">this animation showcases a forward pass computing self attention on our reinvented LPU</p>
+          <div class="slide-controls" aria-label="Main animation controls">
+            <button type="button" data-action="previous" aria-label="Previous frame"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6" /></svg></button>
+            <button type="button" data-action="play" aria-label="Play animation">
+              <svg class="play-icon" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7Z" /></svg>
+              <svg class="pause-icon" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14" /></svg>
+            </button>
+            <button type="button" data-action="reset" aria-label="Reset animation"><svg viewBox="0 0 24 24"><path d="M7 7h10v10H7z" /></svg></button>
+            <button type="button" data-action="next" aria-label="Next frame"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></svg></button>
+          </div>
+        </div>
+      </section>
+
+      <article>
+        <p class="article-lede">We had no previous chip design knowledge, so we decided to figure it out ourselves and see how far we could get! We wanted to demystify AI hardware by building a fully functional LPU from scratch.</p>
+
+        <section>
+          <h2>What was our goal with this project?</h2>
+          <p>We had no guide or course that teaches chip design at our university. We had taken a digital logic course, but were disappointed with the fact that the most complex project we did was building a full adder in Quartus using logic blocks, not even RTL! Therefore, we decided to challenge ourselves to dive deep into ML hardware and learn as much as we could on our own. We wanted to prove that high school math (like \(y = mx + b\)) and basic logic circuits are enough to help anyone understand how modern AI hardware works.</p>
+          <p>We also realized that we had been outsourcing our thinking and understanding to AI a lot recently, so we wanted to build something where we had ownership over in terms of our own thinking and design. We acknowledge that AI is used vastly in today’s age to accelerate processes, but we wanted to use it in a manner where were not outsourcing our learning or understanding.</p>
+
+          <h3>Our process</h3>
+          <p>No matter what we did, we first started by drawing it out. From the most minor details to big overarching ideas, drawing always got us thinking and visualizing the problems and the steps to take to solve them. From there, we verified that our ideas fit the philosophy of an LPU and moved on to minimal coding exercises (i.e getting AI to build us a skeleton of a verilog module with inputs and outputs described and we just have to fill in the middle!) to build a version of the task. This helped us build a great understanding of how everything worked right from the get-go. A major part of using AI was to understand what was actually done, by reading the code and analyzing whether the design was implemented to our perfection.</p>
+        </section>
+
+        <section>
+          <h2>Background on AI accelerators</h2>
+          <p>So what is an LPU? To answer that, we should explain what isn’t an LPU.</p>
+          <p>CPUs were never designed with arithmetic workloads in mind. They were designed for general-purpose processing and executing the functions that make a computer function. They also work sequentially, completing tasks one by one. Moreover, a lot of a CPU’s silicon is dedicated to memory cache hierarchies and out-of-order logic, it becomes a bottleneck for ML arithmetic workloads, and that is where GPUs first came into play.</p>
+          <p>GPUs were made to handle compute-heavy workloads like rendering graphics, but were later adopted for Machine Learning as well. GPUs introduced the concept of parallel arithmetic (computing thousands of math at once). This leads us into modern ML accelerators like TPUs, NPUs and LPUs.</p>
+
+          <h3>Background on hardware</h3>
+          <p>Prior to starting this project, we thought a project related to building hardware genuinely meant we had to deal with physical objects, such as an arduino board, PCB’s, soldering, etc. It turns out, similarly to how you design a printed circuit board with computer aided design, for digital logic you have to describe the hardware using code! For example, let’s say you are coding a module to add two 8-bit numbers together to get a 9-bit number; here is how you would imagine that in hardware.</p>
+
+          <figure class="media-block">
+            <div class="media-stage"><img src="LPU-Lite-assets/module-verilog.png" alt="A hardware module with two input wires and one output wire" loading="lazy" /></div>
+            <figcaption>Two input buses, one module, and one output bus.</figcaption>
+          </figure>
+
+          <p>In this example, we have two input wires that represent two 8-bit inputs, and an output wire representing a 9-bit output. The “module” in between those wires represents our actual logic of how those two numbers are added together.</p>
+
+          <p>This logic in SystemVerilog can be represented as:</p>
+
+          <pre class="code-block" aria-label="SystemVerilog adder module"><code><span>module</span> adder (
+  input  [7:0] a,
+  input  [7:0] b,
+  output [8:0] sum
+);
+
+assign sum = a + b;
+
+<span>endmodule</span></code></pre>
+
+          <p>Now, to take this from software to hardware, you have to use something known as an FPGA (Field Programmable Gate Array). An FPGA can be used to test that your digital logic actually works in hardware; this is known as synthesis. For this project, we will be using the DE1-Soc board to test our chip, and Quartus to synthesize our design.</p>
+        </section>
+
+        <section>
+          <h2>What is an LPU?</h2>
+          <p>LPU stands for Language Processing Unit. The LPU differs from a traditional chip in many ways, but the overarching idea is “deterministic execution”. The term deterministic execution refers to the idea that the chip does not know what to do, except what it is told to do, and the result of said execution must have predictable timing. If an operation is executed multiple times, it should take the same number of clock cycles for each execution. Hardware is dumb. A chip does not think. It is just a collection of microscopic physical switches (transistors) arranged to route signals. The philosophy behind the design of the LPU strips complex control logic off the chip and moves all the intelligence to a piece of software called the compiler.</p>
+
+          <h3>What is a Transformer?</h3>
+          <p>Imagine reading a sentence where words contextually highlight each other. In the sentence "The bank of the river,” the word "bank" connects to "river" rather than "money." That is the idea behind a Transformer: to see what words “attend” to others. To actually generate text, transformers “predict” what the next word is going to be. For example, when you type on your phone and the keyboard suggests the next word, that is the transformer at work predicting what you are going to say next. Therefore, a transformers job is to predict what is going to be said next, which is the basis all modern LLM’s like GPT, and Claude are built on.</p>
+
+          <h3>The Model We Targeted: MicroGPT</h3>
+          <p>MicroGPT is a scaled down Transformer that is trained on simple text, like names to predict the next character in the sequence. Next-token generation is the process of predicting the very next word based on previous context, repeating this loop over and over. Our focus was not on scale, but on validating the core concept.If we can prove why a module can run a certain arithmetic operation efficiently, we can scale it up given the tools we have today, but the most important part remains proving why something works. By using MicroGPT we got rid of any unnecessary parameters and isolated the most important idea of the entire project.</p>
+
+          <div class="equation-stack" aria-label="MicroGPT feed-forward and attention equations">
+            <div class="equation">\[\operatorname{FFN}(x)=\operatorname{ReLU}(xW_1+b_1)W_2+b_2\]</div>
+            <div class="equation">\[\operatorname{Attention}(Q,K,V)=\operatorname{softmax}\!\left(\frac{QK^{\mathsf T}}{\sqrt{d_k}}\right)V\]</div>
+          </div>
+          <p>These two formulas may seem scary to you, however we will walk you through how we developed our chip to be able to solve these equations, and what significance these formulas have!</p>
+        </section>
+
+        <section id="mxm">
+          <h2>MXM</h2>
+          <p>Over 90% of arithmetic work in a typical transformer can be expressed as matrix multiplications (matmul), making matmul acceleration very critical for modern AI accelerators. Inside the LPU, the Matrix Execution Module (MXM) is responsible for accelerating these matmuls.</p>
+          <p>Aside from accelerating matmuls, it should also fit the philosophy of the LPU; it should be deterministic. The term Deterministic refers to the idea that the timing of every matmul must be predictable, we should know exactly how many clock cycles the MXM will take to finish every matmul. To meet this criteria we decided to make the hardware as dumb as possible.</p>
+          <p>When we say the hardware is "dumb," we are not referring to its accuracy or performance. Instead, it requires explicit instructions, like an instruction manual, that specifies when to load weights and inputs, start a matrix multiplication, or accumulate outputs.</p>
+
+          <p>The first step to design our MXM was to understand the anatomy of a matmul. At its core, the matmul consists of many independent dot products between rows and columns of two different matrices. Each dot product requires a sequence of multiplications, followed by additions, which can be implemented through a multiply-accumulate (MAC) unit.</p>
+          <p>The MAC unit then becomes the fundamental computational block of our MXM.</p>
+
+          <figure class="media-block">
+            <div class="media-stage"><img src="LPU-Lite-assets/mac-unit.png" alt="A multiply-accumulate unit receiving inputs and weights" loading="lazy" /></div>
+            <figcaption>A MAC multiplies inputs and weights, then accumulates the result.</figcaption>
+          </figure>
+
+          <p>Now to zoom out, and understand how these dot products are arranged in a matmul, let’s look at an example for a 2x2 @ 2x2 matmul, and write out the resultant dot products.</p>
+
+          <figure class="media-block">
+            <div class="media-stage"><img src="LPU-Lite-assets/2x2mm.png" alt="A 2 by 2 matrix multiplication expanded into four dot products" loading="lazy" /></div>
+            <figcaption>A 2×2 matmul is four independent dot products.</figcaption>
+          </figure>
+
+          <p>We notice that the dot products are also in an array, and if each MAC unit is responsible for one dot product, we can arrange these MAC blocks into something known as a MAC array!</p>
+          <p>To understand how the MAC array works, let’s look at the first outer product of the matmul:</p>
+
+          <div class="paired-media">
+            <figure class="media-block compact">
+              <div class="media-stage"><img src="LPU-Lite-assets/2x2-out-product.png" alt="First outer product of a 2 by 2 matrix multiplication" loading="lazy" /></div>
+              <figcaption>The first outer product.</figcaption>
+            </figure>
+            <figure class="media-block compact">
+              <div class="media-stage"><img src="LPU-Lite-assets/mac-array.png" alt="Four MAC units arranged in a 2 by 2 array" loading="lazy" /></div>
+              <figcaption>Four MAC units form an array.</figcaption>
+            </figure>
+          </div>
+
+          <p>When we place initial outer products inside the mac array, we get this arrangement:</p>
+
+          <figure class="media-block">
+            <div class="media-stage"><img src="LPU-Lite-assets/outer-product-array.png" alt="Outer-product values placed across a 2 by 2 MAC array" loading="lazy" /></div>
+            <figcaption>Rows share inputs in green; columns share weights in red.</figcaption>
+          </figure>
+
+          <p>Over here, we can observe from the topology of the matmul that the rows of the MAC array share inputs (highlighted in green), and the columns share the weights (highlighted in red). As a result, when we wire the array, we can have a row of the MAC share the input wire, and a column share a row wire.</p>
+          <p>A MAC array also allows us to introduce “parallelism”, meaning each MAC unit can compute dot product, and accumulate independently!</p>
+
+          <p>When we introduce the wires into the MAC array, it can be visualized as:</p>
+
+          <figure class="media-block">
+            <div class="media-stage"><img src="LPU-Lite-assets/mxm-wired-systolic.png" alt="Initial MXM wiring where data passes between MAC units" loading="lazy" /></div>
+            <figcaption>Initial wiring: green inputs move right and red weights move down.</figcaption>
+          </figure>
+
+          <p>In the diagram above, the green wires carry the inputs to the right, and the red wires carry the weights down a column.</p>
+          <p>This is how we first visualized the MXM! We then realized that for this arrangement, inputs would need to pass through a MAC unit before reaching downstream MACs. Meaning if we want i00 to go to MAC 0,1, it would have to go through MAC 0,0. It would mean that for MAC 0,1 to compute its respective dot product, it would be dependent on MAC 0,0’s timing.</p>
+          <p>We decided that the inputs and weights should arrive at their respective MACs at the same time to maintain our idea of independence. That would cause the MAC array to look something closer to this visualization:</p>
+
+          <figure class="media-block">
+            <div class="media-stage"><img src="LPU-Lite-assets/mxm-wired-lpulite.png" alt="LPU Lite MXM wiring with independent routes to each MAC" loading="lazy" /></div>
+            <figcaption>Our revised wiring delivers inputs and weights without inter-MAC delays.</figcaption>
+          </figure>
+
+          <p>This tweak in the design allowed for us to bring our idea of inputs and weights arriving at their respective MAC’s without delays. This style of wiring also introduces a potential flaw in the design. The wiring gets increasingly more complicated as the design scales up. This is only a 2x2 MXM, whereas the real LPU is a 320x320 grid. Having these large wires between the MAC units may cause further complications when it comes to bringing the hardware into reality, whether in FPGA or an actual tapeout (physical silicon).</p>
+          <p>Our original design is closer to what modern ASIC’s actually use for accelerating matmuls, and that design is known as the famous Systolic Array!</p>
+
+          <p>Over here we can see the differences in the wiring of our original design, and the design we settled on.</p>
+
+          <div class="slideshow comparison" data-slideshow="comparison">
+            <button class="slide-stage square-stage" type="button" data-action="next" aria-label="Show the next architecture">
+              <img src="LPU-Lite-assets/sysarray.png" alt="Systolic array wiring" loading="lazy" draggable="false" />
+            </button>
+            <div class="slide-meta"><span data-title>Systolic array</span><span data-count>1 / 2</span></div>
+            <div class="slide-controls" aria-label="Architecture comparison controls">
+              <button type="button" data-action="previous" aria-label="Previous architecture"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6" /></svg></button>
+              <button type="button" data-action="next" aria-label="Next architecture"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></svg></button>
+            </div>
+          </div>
+
+          <p>A goal we had for this project was to build an intuition for invention, rather than building pre-existing architectures, therefore we went ahead with our version of the MXM! .</p>
+
+          <h3>Animation of mxm</h3>
+
+          <div class="matrix-primer" aria-label="Matrices and example dot products used in the MXM animation">
+            <div class="equation matrix-matmul">\[\underbrace{\begin{bmatrix}2&3\\-1&4\end{bmatrix}}_{A}\;@\;\underbrace{\begin{bmatrix}5&-2\\1&6\end{bmatrix}}_{B}=\begin{bmatrix}c_{00}&c_{01}\\c_{10}&c_{11}\end{bmatrix}\]</div>
+            <div class="dot-products">
+              <div>
+                <span>MAC 0,0</span>
+                <div class="equation">\[\begin{bmatrix}2&3\end{bmatrix}\cdot\begin{bmatrix}5\\1\end{bmatrix}\]</div>
+              </div>
+              <div>
+                <span>MAC 0,1</span>
+                <div class="equation">\[\begin{bmatrix}2&3\end{bmatrix}\cdot\begin{bmatrix}-2\\6\end{bmatrix}\]</div>
+              </div>
+              <div>
+                <span>MAC 1,0</span>
+                <div class="equation">\[\begin{bmatrix}-1&4\end{bmatrix}\cdot\begin{bmatrix}5\\1\end{bmatrix}\]</div>
+              </div>
+              <div>
+                <span>MAC 1,1</span>
+                <div class="equation">\[\begin{bmatrix}-1&4\end{bmatrix}\cdot\begin{bmatrix}-2\\6\end{bmatrix}\]</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="slideshow mxm-slideshow" data-slideshow="mxm">
+            <button class="slide-stage square-stage" type="button" data-action="next" aria-label="Next MXM animation frame">
+              <img src="LPU-Lite-assets/mxm_anim/mxm_anim.png" alt="MXM animation frame 1" loading="lazy" draggable="false" />
+            </button>
+            <div class="slide-meta"><span>MXM animation</span><span data-count>1 / 6</span></div>
+            <div class="slide-controls" aria-label="MXM animation controls">
+              <button type="button" data-action="previous" aria-label="Previous frame"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6" /></svg></button>
+              <button type="button" data-action="play" aria-label="Play animation">
+                <svg class="play-icon" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7Z" /></svg>
+                <svg class="pause-icon" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14" /></svg>
+              </button>
+              <button type="button" data-action="reset" aria-label="Reset animation"><svg viewBox="0 0 24 24"><path d="M7 7h10v10H7z" /></svg></button>
+              <button type="button" data-action="next" aria-label="Next frame"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></svg></button>
+            </div>
+          </div>
+        </section>
+      </article>
+    </main>
+    <script src="script.js?v=article-7"></script>
+  </body>
+</html>
