@@ -61,6 +61,28 @@
 <p>Imagine reading a sentence where words contextually highlight each other. In the sentence &quot;The bank of the river&quot;, the word &quot;bank&quot; connects to &quot;river&quot; rather than &quot;money&quot;. That is the idea behind a Transformer: to see what words “attend” to others. To actually generate text, transformers “predict” what the next word is going to be. For example, when you type on your phone and the keyboard suggests the next word, that is the transformer at work predicting what you are going to say next. Therefore, a transformer&#x27;s job is to predict what is going to be said next, which is the basis all modern LLMs like GPT and Claude are built on.</p>
 <h3>The Model We Targeted: MicroGPT</h3>
 <p>MicroGPT is a scaled-down Transformer that is trained on simple text, like names, to predict the next character in the sequence. Next-token generation is the process of predicting the very next word based on previous context, repeating this loop over and over. Our focus was not on scale, but on validating the core concept. If we can prove why a module can run a certain arithmetic operation efficiently, we can scale it up given the tools we have today. However, the most important part remains proving why something works. By using MicroGPT, we got rid of any unnecessary parameters and isolated the most important idea of the entire project.</p>
+<div class="microgpt-demo" data-microgpt-demo>
+  <div class="microgpt-demo-header">
+    <div>
+      <p class="demo-eyebrow">Interactive MicroGPT example</p>
+      <h4>Predict the next character</h4>
+    </div>
+    <button class="demo-reset" type="button" data-microgpt-reset>Reset</button>
+  </div>
+  <div class="generated-name" aria-live="polite">
+    <span class="generated-label">Generated name</span>
+    <span class="generated-value"><span data-generated-name>Ya</span><span class="generated-cursor" aria-hidden="true"></span></span>
+  </div>
+  <div class="demo-guidance">
+    <span class="demo-step" data-demo-step>Step 1</span>
+    <p data-demo-message>The prefix “Ya” can lead to several names. The model ranks “s” first, but “n” is also plausible.</p>
+  </div>
+  <div class="token-heading"><span>Choose the next letter</span><span>Four possibilities</span></div>
+  <div class="token-grid" data-token-grid aria-label="Next-character probabilities"></div>
+  <p class="demo-reset-prompt">Press Reset to try again.</p>
+  <p class="demo-disclaimer">This is an illustrative probability demo designed to explain next-character prediction.</p>
+  <noscript><p class="demo-disclaimer">Enable JavaScript to try this interactive example.</p></noscript>
+</div>
 <div class="equation-stack"><div class="equation">\[\operatorname{FFN}(x)=\operatorname{ReLU}(xW_1+b_1)W_2+b_2\]</div><div class="equation" id="attention-formula">\[\operatorname{Attention}(Q,K,V)=\operatorname{softmax}\!\left(\frac{QK^{\mathsf T}}{\sqrt{d_k}}\right)V\]</div></div>
 <p>These two formulas may seem scary at first glance. However, how we designed our chip to be able to compute arithmetic such as these, and the significance these formulas hold will be covered in this article.</p>
 </section>
