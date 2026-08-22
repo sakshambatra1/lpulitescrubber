@@ -545,6 +545,15 @@
 <p>We used a Tersaic DE1-SOC development board to implement our design. We used Cocotb to test all the modules and our logic during the design process. Testbenches were really important as they helped us identify any mistakes and test edge cases for our RTL designs (we were able to identify the softmax division bottleneck because of this!) After the completion of our design, we measured ~8.5k tok/s (tokens per second) when running inference of MicroGPT using CocoTB.</p>
 <p>When we brought up the design on the FPGA, it was extremely dense and ended up using 100% of the potential logic blocks, which forced us to lower our clock frequency from 100 MHz to 6.75 MHz. This means we would have a clock edge every 160ns on the FPGA, from 10ns on CocoTB. This disparity was one of the reasons why our FPGA tok/s came out to be 20.</p>
 <p>Theoretically, the 8500 tok/s can be brought down to 530 tok/s simply due to the clock frequency decrease; the rest of the reduction of tok/s can be attributed to other overheads.</p>
+<figure class="media-block original-media implementation-video" id="fpga-implementation-video">
+  <div class="media-stage">
+    <video controls playsinline preload="metadata" aria-label="LPU Lite FPGA implementation video">
+      <source src="fpga-implementation-demo.mp4" type="video/mp4" />
+      Your browser does not support embedded MP4 video.
+    </video>
+  </div>
+  <figcaption>LPU Lite running on the FPGA.</figcaption>
+</figure>
 </section>
 <section class="footnotes" id="footnotes" aria-labelledby="footnotes-title">
 <p class="section-label">References</p>
@@ -572,6 +581,9 @@
   <li id="footnote-20"><p><span class="source-citation">Abts, Dennis, et al. <a href="https://dl.acm.org/doi/10.1145/3470496.3527405" target="_blank" rel="noreferrer">“A Software-Defined Tensor Streaming Multiprocessor for Large-Scale Machine Learning.”</a> <cite>Proceedings of the 49th Annual International Symposium on Computer Architecture (ISCA ’22)</cite>, Association for Computing Machinery, 2022, pp. 567–580. doi: 10.1145/3470496.3527405.</span></p></li>
 </ol>
 </section>
+<footer class="article-thanks" id="special-thanks">
+  <p>Special thanks to <a href="https://tinytpu.com/" target="_blank" rel="noreferrer">tinytpu.com</a> and their members for inspiring this project, and helping this project to be as great as it can be.</p>
+</footer>
 </article>
 </main>
 <script src="script.js?v=draft1-verbatim"></script>

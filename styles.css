@@ -437,6 +437,15 @@ article .microgpt-demo .demo-disclaimer {
   object-fit: contain;
 }
 
+.implementation-video video {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #000;
+}
+
 .buses-original { width: 100%; }
 .buses-original .media-stage img { max-height: none; }
 
@@ -846,6 +855,28 @@ article .footnotes li p {
   white-space: nowrap;
 }
 .source-citation cite { font-style: italic; }
+
+.article-thanks {
+  margin-top: 72px;
+  padding-top: 28px;
+  border-top: 1px solid var(--line);
+}
+
+article .article-thanks p {
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 0.94rem;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.article-thanks a {
+  color: inherit;
+  text-decoration-color: rgba(101, 113, 120, 0.45);
+  text-underline-offset: 0.16em;
+}
+
+.article-thanks a:hover { color: var(--accent); text-decoration-color: var(--accent); }
 
 @media (max-width: 700px) {
   .hero { padding: max(38px, env(safe-area-inset-top)) 12px 24px; }
