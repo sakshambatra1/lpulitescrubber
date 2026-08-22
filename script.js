@@ -8,7 +8,7 @@ const slideshows = {
     alt: (index) => `LPU Lite forward-pass architecture, frame ${index + 1}`,
   },
   comparison: {
-    frames: ["LPU-Lite-assets/sysarray.png", "LPU-Lite-assets/mxm4x4.png"],
+    frames: ["draft1-originals/sysarray.png", "draft1-originals/mxm4x4.png"],
     titles: ["Systolic array", "LPU Lite MXM"],
     alt: (index) => index === 0 ? "Systolic array wiring" : "LPU Lite MXM wiring",
   },
@@ -19,6 +19,21 @@ const slideshows = {
     ],
     interval: 850,
     alt: (index) => `MXM animation frame ${index + 1}`,
+  },
+  "vxm-v2": {
+    frames: ["vxm-v2-anim/vxm-v2.png", ...Array.from({ length: 3 }, (_, index) => `vxm-v2-anim/vxm-v2-${index + 2}.png`)],
+    interval: 900,
+    alt: (index) => `VXM v2 pipeline animation frame ${index + 1}`,
+  },
+  chunking: {
+    frames: ["chunking-anim/chunking.png", ...Array.from({ length: 15 }, (_, index) => `chunking-anim/chunking-${index + 2}.png`)],
+    interval: 750,
+    alt: (index) => `RMSNorm chunking animation frame ${index + 1}`,
+  },
+  buffering: {
+    frames: ["buffering-anim/buffering-mxm.png", ...Array.from({ length: 4 }, (_, index) => `buffering-anim/buffering-mxm-${index + 2}.png`)],
+    interval: 850,
+    alt: (index) => `MXM double buffering animation frame ${index + 1}`,
   },
 };
 
