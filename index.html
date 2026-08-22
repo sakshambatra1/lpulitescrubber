@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=draft1-verbatim" />
+  <link rel="stylesheet" href="styles.css?v=rope-latex-citations" />
   <script>window.MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"]]},svg:{fontCache:"global"}};</script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 </head>
@@ -17,7 +17,7 @@
 <main>
   <section class="hero" aria-labelledby="page-title">
     <header class="hero-copy"><h1 id="page-title">LPU Lite</h1><p>a lite language processing unit by Saksham Batra, Michael Trbovic, and Arjun Harinath.</p></header>
-    <div class="slideshow main-slideshow" data-slideshow="main">
+    <div class="slideshow main-slideshow" id="lpu-forward-pass-animation" data-slideshow="main">
       <button class="slide-stage wide-stage" type="button" data-action="next" aria-label="Next frame"><img src="main_animation/LPU-Anim.png" alt="LPU Lite forward-pass architecture, frame 1" draggable="false" /></button>
       <p class="animation-caption">this animation showcases a forward pass computing self attention on our reinvented LPU</p>
       <div class="slide-controls">
@@ -31,11 +31,11 @@
   <article id="draft-content">
 <p class="article-lede">We had no previous chip design knowledge, so we decided to figure it out ourselves and see how far we could get! We wanted to demystify AI hardware by building a fully functional LPU from scratch.</p>
 <section id="section-1"><p class="section-label">01 / Motivation</p><h2>What was our goal with this project?</h2>
-<p>We had no guide or course that teaches chip design at our university. We had taken a digital logic course, but were disappointed with the fact that the most complex project we did was building a full adder in Quartus using logic blocks, not even in RTL! Therefore, we decided to challenge ourselves to dive deep into machine learning (ML) hardware and learn as much as we could on our own. We wanted to prove that basic math (like y = mx + b) and basic logic circuits are enough to help anyone understand how modern AI hardware works.</p>
+<p>We had no guide or course that teaches chip design at our university. We had taken a digital logic course, but were disappointed with the fact that the most complex project we did was building a full adder in Quartus using logic blocks, not even in RTL<sup class="footnote-ref" id="footnote-ref-1"><a href="#footnote-1" aria-label="Footnote 1">1</a></sup>! Therefore, we decided to challenge ourselves to dive deep into machine learning (ML) hardware and learn as much as we could on our own. We wanted to prove that basic math (like y = mx + b) and basic logic circuits are enough to help anyone understand how modern AI hardware works.</p>
 <p>We also realized that we had been relying heavily on AI, and we wanted to build something where we maintained ownership of our own thinking and design. We acknowledge that AI is used vastly in today’s age to accelerate processes, but we wanted to use it as a tool to support our work rather than replace our learning or understanding.</p>
 <p>Keep in mind, this article should not serve as a tutorial for “how to build an LPU from scratch”, and our architecture is not a 1-1 LPU. It serves as an educational resource for how someone with minimal hardware experience can approach this field, and our journey for building what we think an LPU would look like.</p>
 <h3>Our process</h3>
-<p>Each time we tackled a problem, our initial step was drawing it out. From the most minor details to big ideas, drawing always got us thinking and helped us visualize the steps to take to solve them. From there, we verified that our ideas fit the philosophy of an LPU and moved on to minimal coding exercises (i.e getting AI to build us a skeleton of a Verilog module with inputs and outputs described, and we just have to fill in the middle!) to build a version of the task. This helped us build a great understanding of how everything worked right from the get-go. A significant portion of our AI usage was to understand what was actually done by reading the code and analyzing whether the design was implemented to our perfection.</p>
+<p>Each time we tackled a problem, our initial step was drawing it out. From the most minor details to big ideas, drawing always got us thinking and helped us visualize the steps to take to solve them. From there, we verified that our ideas fit the philosophy of an LPU and moved on to minimal coding exercises (i.e getting AI to build us a skeleton of a Verilog<sup class="footnote-ref" id="footnote-ref-2"><a href="#footnote-2" aria-label="Footnote 2">2</a></sup> module with inputs and outputs described, and we just have to fill in the middle!) to build a version of the task. This helped us build a great understanding of how everything worked right from the get-go. A significant portion of our AI usage was to understand what was actually done by reading the code and analyzing whether the design was implemented to our perfection.</p>
 </section>
 <section id="section-2"><p class="section-label">02 / Foundations</p><h2>Background on AI accelerators</h2>
 <p>So what is an LPU? To answer that, let&#x27;s first understand what isn’t an LPU.</p>
@@ -56,7 +56,7 @@
 <p>Now, to take this from software to hardware, you have to use something known as an FPGA (Field Programmable Gate Array). An FPGA can be used to test that your digital logic actually works in hardware; this is known as synthesis. For this project, we will be using the DE1-Soc board to test our chip, and Quartus to synthesize our design.</p>
 </section>
 <section id="section-3"><p class="section-label">03 / The idea</p><h2>What is an LPU?</h2>
-<p>LPU stands for Language Processing Unit. The LPU differs from a traditional chip in many ways, but the overarching idea is “deterministic execution”. The term deterministic execution refers to the idea that the chip does not know what to do, except what it is told to do, and the result of said execution must have predictable timing. If an operation is executed multiple times, it should take the same number of clock cycles for each execution. Hardware is dumb. A chip does not think. It is just a collection of microscopic physical switches (transistors) arranged to route signals. The philosophy behind the design of the LPU strips complex control logic off the chip and moves all the intelligence to a piece of software called the compiler.</p>
+<p>LPU stands for Language Processing Unit. The LPU differs from a traditional chip in many ways, but the overarching idea is “deterministic execution”. The term deterministic execution refers to the idea that the chip does not know what to do, except what it is told to do, and the result of said execution must have predictable timing. If an operation is executed multiple times, it should take the same number of clock cycles<sup class="footnote-ref" id="footnote-ref-3"><a href="#footnote-3" aria-label="Footnote 3">3</a></sup> for each execution. Hardware is dumb. A chip does not think. It is just a collection of microscopic physical switches (transistors) arranged to route signals. The philosophy behind the design of the LPU strips complex control logic off the chip and moves all the intelligence to a piece of software called the compiler.</p>
 <h3>What is a Transformer?</h3>
 <p>Imagine reading a sentence where words contextually highlight each other. In the sentence &quot;The bank of the river&quot;, the word &quot;bank&quot; connects to &quot;river&quot; rather than &quot;money&quot;. That is the idea behind a Transformer: to see what words “attend” to others. To actually generate text, transformers “predict” what the next word is going to be. For example, when you type on your phone and the keyboard suggests the next word, that is the transformer at work predicting what you are going to say next. Therefore, a transformer&#x27;s job is to predict what is going to be said next, which is the basis all modern LLMs like GPT and Claude are built on.</p>
 <h3>The Model We Targeted: MicroGPT</h3>
@@ -83,7 +83,7 @@
   <p class="demo-disclaimer">This is an illustrative probability demo designed to explain next-character prediction.</p>
   <noscript><p class="demo-disclaimer">Enable JavaScript to try this interactive example.</p></noscript>
 </div>
-<div class="equation-stack"><div class="equation">\[\operatorname{FFN}(x)=\operatorname{ReLU}(xW_1+b_1)W_2+b_2\]</div><div class="equation" id="attention-formula">\[\operatorname{Attention}(Q,K,V)=\operatorname{softmax}\!\left(\frac{QK^{\mathsf T}}{\sqrt{d_k}}\right)V\]</div></div>
+<div class="equation-stack"><div class="equation" id="ffn-formula">\[\operatorname{FFN}(x)=\operatorname{ReLU}(xW_1+b_1)W_2+b_2\]</div><div class="equation" id="attention-formula">\[\operatorname{Attention}(Q,K,V)=\operatorname{softmax}\!\left(\frac{QK^{\mathsf T}}{\sqrt{d_k}}\right)V\]</div></div>
 <p>These two formulas may seem scary at first glance. However, how we designed our chip to be able to compute arithmetic such as these, and the significance these formulas hold will be covered in this article.</p>
 </section>
 <section id="section-4"><p class="section-label">04 / Matrix execution</p><h2>MXM</h2>
@@ -104,13 +104,13 @@
 <p>Over here, we can observe from the topology of the matmul that the rows of the MAC array share inputs (highlighted in green), and the columns share the weights (highlighted in red). As a result, when we wire the array, we can have a row of the MAC share the input wire, and a column share a row wire.</p>
 <p>A MAC array also allows us to introduce “parallelism,” meaning each MAC unit can compute the dot product and accumulate independently!</p>
 <p>When we introduce the wires into the MAC array, it can be visualized as:</p>
-<figure class="media-block original-media"><div class="media-stage"><img src="draft1-originals/mxm-wired.png" alt="Original MXM wiring" loading="lazy" /></div><figcaption>Initial wiring: green inputs move right and red weights move down.</figcaption></figure>
+<figure class="media-block original-media" id="mxm-original-design"><div class="media-stage"><img src="draft1-originals/mxm-wired.png" alt="Original MXM wiring" loading="lazy" /></div><figcaption>Initial wiring: green inputs move right and red weights move down.</figcaption></figure>
 <p>In the diagram above, the green wires carry the inputs to the right, and the red wires carry the weights down a column.</p>
 <p>This is how we first visualized the MXM! We then realized that for this arrangement, inputs would need to pass through a MAC unit before reaching downstream MACs. Meaning, if we want i00 to go to MAC 0,1, it would have to go through MAC 0,0 before reaching its destination. It would mean that for MAC 0,1 to compute its respective dot product, it would be dependent on MAC 0,0’s timing (as if MAC 0,0 is not complete, it cannot go to MAC 0,1).</p>
 <p>We decided that the inputs and weights should arrive at their respective MACs at the same time to maintain our idea of independence. That would cause the MAC array to look something closer to this visualization:</p>
 <figure class="media-block original-media"><div class="media-stage"><img src="draft1-originals/mxm-wired-real.png" alt="LPU Lite MXM wiring" loading="lazy" /></div><figcaption>Our revised wiring delivers inputs and weights without inter-MAC delays.</figcaption></figure>
 <p>This tweak in the design allowed us to bring our idea of inputs and weights arriving at their respective MAC’s without delays. This style of wiring also introduces a potential flaw in the design. The wiring gets increasingly more complicated as the design scales up. This is only a 2x2 MXM, whereas the real LPU is a 320x320 grid. Having these large wires between the MAC units may cause further complications when it comes to bringing the hardware into reality, whether in FPGA or an actual tapeout (physical silicon).</p>
-<p>Our original design is closer to what modern ASIC’s actually use for accelerating matmuls, and that design is famously known as the Systolic Array!</p>
+<p><a class="inline-jump" href="#mxm-original-design">Our original design</a> is closer to what modern ASIC’s<sup class="footnote-ref" id="footnote-ref-4"><a href="#footnote-4" aria-label="Footnote 4">4</a></sup> actually use for accelerating matmuls, and that design is famously known as the Systolic Array!<sup class="footnote-ref" id="footnote-ref-5"><a href="#footnote-5" aria-label="Footnote 5">5</a></sup></p>
 <p>Over here we can see the differences in the wiring of our original design and the design we settled on.</p>
 <div class="slideshow comparison" data-slideshow="comparison">
           <button class="slide-stage square-stage" type="button" data-action="next" aria-label="Show the next architecture"><img src="draft1-originals/sysarray.png" alt="Systolic array wiring" loading="lazy" draggable="false" /></button>
@@ -132,7 +132,7 @@
       <button type="button" data-action="next" aria-label="Next frame"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></svg></button>
     </div>
     </div>
-<p>Now, how does the MXM get applied to language model workloads? Let&#x27;s look back at the formula we saw above.</p>
+<p>Now, how does the MXM get applied to language model workloads? Let&#x27;s look back at <a class="inline-jump" href="#attention-formula">the formula we saw above</a>.</p>
 <p>The Q, K, V variables in this formula represent the Query, Key, and Value vectors.</p>
 <p>To learn more about these, let&#x27;s imagine we have the input “Thinking Machines”. If we look at the words individually, who is thinking? What is being thinked about? Who is the machine? What does the machine do? These questions can be answered through these matrices!</p>
 <p>In terms of Query, the word “Thinking” may encode the questions: what is the subject? What is the object? What are the nearby nouns?. The Query vector includes these questions so the model can learn which information is relevant.</p>
@@ -143,7 +143,7 @@
 <p>These weights are generated during training, which is a whole different part of machine learning; however, for now, we will only look at what happens during inference (using the model). Each input (&quot;thinking&quot;, &quot;machines&quot;, all of these are independent inputs) has its own Q, K, V vectors. Once we have the Q, K, V vectors, we can then multiply \(Q @ K^{\mathsf T}\). Why a multiplication? If we look at the dot product and why it&#x27;s done, the purpose is to understand how close two different vectors are. The purpose of Q is the question the word is asking.</p>
 <p>If we take the Q vector for the machines, and matmul it with the K vector of machines, it will give a value very close to 1.00 indicating the two vectors are very similar, but if we matmul the Q for machines, and K for printer we may get a non zero vector, also not close to one, this would mean “the vectors have some relationship to one another, but are not the same”. The matmul of Q for “thinking” and K for “machines” might be way closer to the previous one, as it might denote “the vectors are both machines used for some sort of processes.”.</p>
 <figure class="media-block original-media attention-relationship-media"><div class="media-stage"><img src="draft1-originals/mxm-self-attention.png" alt="Self-attention score calculation" loading="lazy" /></div><figcaption>Query and Key vectors establish relationships between “thinking” and “machines”.</figcaption></figure>
-<p>The purpose of the matmul in this case is to give the vectors some sort of relationship to one another! We then follow up with scalar/vector operations to complete this formula.</p>
+<p>The purpose of the matmul in this case is to give the vectors some sort of relationship to one another! We then follow up with scalar/vector operations to complete this formula.<sup class="footnote-ref" id="footnote-ref-6"><a href="#footnote-6" aria-label="Footnote 6">6</a></sup></p>
 </section>
 <section id="section-5"><p class="section-label">05 / Matrix movement</p><h2>SXM</h2>
 <p>Now looking at that matmul, there was a strange T above the K vector.</p>
@@ -156,7 +156,7 @@
 <h3>VXM v1</h3>
 <p>The Vector Execution Module (VXM) is the module responsible for scalar and vector operations. When the LPU was designed, the compiler was kept. They believed that with basic operations such as addition, subtraction, multiplication, exponentiation, etc, the compiler could string these operations together to form complete formulas. When we started work on the VXM, we wanted to get the basics down, so we started with 3 operations:</p>
 <ol class="draft-list"><li>Bias Add (addition)</li><li>Scale (multiplication)</li><li>ReLU.</li></ol>
-<p>We saw ReLU in the formula earlier, so let&#x27;s dive into why we use it. To learn ReLU, we first need to know what an activation function is. These things are responsible for removing the linearity in neural networks. To learn what a “neural network” means let&#x27;s look at the basis of this concept.</p>
+<p>We saw <a class="inline-jump" href="#ffn-formula">ReLU in the formula earlier</a>, so let&#x27;s dive into why we use it. To learn ReLU, we first need to know what an activation function is. These things are responsible for removing the linearity in neural networks. To learn what a “neural network” means let&#x27;s look at the basis of this concept.</p>
 <p>In an actual brain, neurons receive electrical signals from their surrounding neurons, and when it reaches a threshold, the signals are passed onto the next neuron. These “AI” neurons work in the same way; they take in data, perform calculations, and decide whether or not to pass that information onto the next layer.</p>
 <figure class="media-block original-media vxm-v1-media"><div class="media-stage"><img src="draft1-originals/neuron.png" alt="Artificial neuron" loading="lazy" /></div><figcaption>An artificial neuron combines its input, weight, and bias.</figcaption></figure>
 <figure class="media-block original-media vxm-v1-media"><div class="media-stage"><img src="draft1-originals/neural-net.png" alt="Simple neural network" loading="lazy" /></div><figcaption>A simple neural network built from connected neurons.</figcaption></figure>
@@ -184,8 +184,8 @@
 <p>ReLU is a concept that runs on a very simple premise: If a number is negative, set the output to 0 If the number is positive, let it pass through.</p>
 <p>By following these rules, ReLU breaks the linearity. It takes the flat plane and creates bends. Using these planes that can bend, you can combine them with multiple other bent planes to almost create a box that groups up only the apples, leaving the oranges as they are.</p>
 <figure class="media-block original-media vxm-v1-media"><div class="media-stage"><img src="draft1-originals/3d-nn-relu.png" alt="Three-dimensional decision boundary after ReLU" loading="lazy" /></div><figcaption>ReLU introduces a non-linear decision boundary.</figcaption></figure>
-<p>After adding ReLU to our graph, we can now see that there are two lines, one that&#x27;s fully flat in the X-Y plane and a linear line after that. This allows our function to create the prediction that if the output value of our Z function is close to 0, the probability is that the fruit is likely a tomato, and the higher it is from zero, the likelihood that it is a lemon increases.</p>
-<p>There are also other activation functions such as Sigmoid and GeLU / SiLU / SwiGLU; however, ReLU provides the perfect balance between simplicity and effectiveness, so we decided on that.</p>
+<p>After adding ReLU to our graph, we can now see that there are two lines, one that&#x27;s fully flat in the X-Y plane and a linear line after that. This allows our function to create the prediction that if the output value of our Z function is close to 0, the probability is that the fruit is likely a tomato, and the higher it is from zero, the likelihood that it is a lemon increases.<sup class="footnote-ref" id="footnote-ref-7"><a href="#footnote-7" aria-label="Footnote 7">7</a></sup></p>
+<p>There are also other activation functions such as Sigmoid and GeLU / SiLU / SwiGLU<sup class="footnote-ref" id="footnote-ref-8"><a href="#footnote-8" aria-label="Footnote 8">8</a></sup>; however, ReLU provides the perfect balance between simplicity and effectiveness, so we decided on that.</p>
 <p>As a reminder, we now have Bias Add, Scale, and ReLU in the VXM. Now that we had our 3 operations, we wanted to make formula creation (stringing operations together) easy for the compiler, so we decided that adding a selection of which operation you want at a time would be best. To do that, we needed to use a hardware block called a multiplexer (MUX).</p>
 <p>A MUX is super useful and can almost be visualized as a train track selector: if I flip a switch to the left, it should choose the left lane; if I make the switch go to the middle, it should pick the middle lane and so on. Instead of a switch, they work on control bits. If I pass a zero into the control line, lane 0 is my output; if I pass 1, lane 1 is my output. This can be scaled to as many lanes as you need, but for our purposes we would require a 3-to-1 MUX, where the control bit is now 2 bits wide instead of 1 bit.</p>
 <figure class="media-block original-media vxm-v1-media vxm-mux-media"><div class="media-stage"><img src="draft1-originals/3-1-mux.png" alt="3-to-1 multiplexer" loading="lazy" /></div><figcaption>A 3-to-1 MUX selects one operation path.</figcaption></figure>
@@ -213,9 +213,9 @@
 <p>To address the flaw of operating on multiple elements at a time, we expanded the VXM to hold multiple lanes. For example, let&#x27;s say we have a row [a00, a01]; as of yet, we can only do computations on one element at a time. We wanted to parallelize this process by being able to execute an operation on each row at a time. That is when we introduced multiple lanes!</p>
 <figure class="media-block original-media"><div class="media-stage"><img src="draft1-originals/vxmv2_lanes.png" alt="Parallel VXM v2 lanes" loading="lazy" /></div><figcaption>The number of rows is changeable on our actual hardware; we used 8 lanes; however, the picture depicts 2 lanes for simplicity purposes.</figcaption></figure>
 <p>After all of the elementwise operations (bias+, ReLU, Scale) are completed, we collect them into a row to proceed with the vector operations.</p>
-<p>Now its time to implement vector-wise operations, including Softmax, RoPE, RMSNorm, and Vector Add (used for residual addition).</p>
+<p>Now its time to implement vector-wise operations, including Softmax, RoPE, RMSNorm, and Vector Add (used for residual addition)<sup class="footnote-ref" id="footnote-ref-9"><a href="#footnote-9" aria-label="Footnote 9">9</a></sup>.</p>
 <figure class="media-block original-media vxm-full-media"><div class="media-stage"><img src="draft1-originals/vxm-v2-full.png" alt="Full VXM v2" loading="lazy" /></div><figcaption>The complete VXM combines elementwise and vector-wise operations.</figcaption></figure>
-<p>Groq designed their LPU to be extremely flexible. Inside their VXM, they didn’t have a physical softmax operation. Instead, they designed their hardware with basic calculators that can do operations like add, multiply, finding maximums and minimums, etc. To execute operations like Softmax, they completely rely on the compiler. The way it works is that the compiler breaks down the complex request into tiny ones that the hardware can perform using simple arithmetic blocks. For example, if they wanted to calculate:</p>
+<p>Groq<sup class="footnote-ref" id="footnote-ref-10"><a href="#footnote-10" aria-label="Footnote 10">10</a></sup> designed their LPU to be extremely flexible. Inside their VXM, they didn’t have a physical softmax operation. Instead, they designed their hardware with basic calculators that can do operations like add, multiply, finding maximums and minimums, etc. To execute operations like Softmax, they completely rely on the compiler. The way it works is that the compiler breaks down the complex request into tiny ones that the hardware can perform using simple arithmetic blocks. For example, if they wanted to calculate:</p>
 <p>(x * a + b) * c,</p>
 <p>The compiler tells the hardware to send data x and a into a multiplier block, take that result and send it into an adder block to add b, then take that result to send it into another multiplier block to multiply with c. This design choice allows them to continue using their physical chip; in case of any big changes, such as a new activation function being discovered, they only have to update their compiler. However, all the instructions take up a lot of memory and bandwidth.</p>
 <p>We took the opposite approach. Our focus was on hardware, so we didn’t mind sacrificing flexibility as long as we maintained some sort of determinism within the chip. Hence, we hardwired RMSNorm, Softmax, and RoPE directly. While we sacrifice the ability to make quick updates if there are any big changes, we have the massive advantage of speed.</p>
@@ -232,7 +232,7 @@
 <p>Softmax is represented by this crazy formula:</p>
 <div class="equation">\[\operatorname{Softmax}(z_i)=\frac{e^{z_i}}{\sum_{j=1}^{K}e^{z_j}}\]</div>
 <p>Thankfully, it&#x27;s very easy to understand.</p>
-<p>Our friend Surya had actually already implemented softmax in hardware before! It included a divider module, exponential module, and the means to chain them all together, so we just ported this module into our own VXM. When we eventually tested the functionality, we noticed that this softmax gave correct answers but took around 300 clock cycles to complete.</p>
+<p>Our friend Surya had actually already implemented softmax in hardware before<sup class="footnote-ref" id="footnote-ref-11"><a href="#footnote-11" aria-label="Footnote 11">11</a></sup>! It included a divider module, exponential module, and the means to chain them all together, so we just ported this module into our own VXM. When we eventually tested the functionality, we noticed that this softmax gave correct answers but took around 300 clock cycles to complete.</p>
 <p>For reference, a 4x4 @ 4x4 matmul takes around 14 clock cycles. This is an issue as if a matmul finishes before the softmax does, those elements will have nowhere to go. Softmax became a major bottleneck.</p>
 <p>That timing issue is caused by the complexity behind how division and exponentials are created in hardware. Multipliers and adders are relatively easy to build out of logic gates, making them cheaper operations, but one 8-bit division module requires roughly 200 to 1,500 logic gates! All of those gates add computation time; repeat that operation over and over, and our LPU would take minutes for just a single token output.</p>
 <p>But what if the hardware knew the answers to division/exp questions as they were asked?</p>
@@ -330,7 +330,100 @@
 <ol class="draft-list"><li>Find the max of the row</li><li>Divide that max by 127 to get the scale factor</li><li>Divide the rest of the row by that factor</li></ol>
 <p>As you can see, the highest value will always be 127. Even though the two rows originally had different maximum values, each row requires a different scale factor to map its values into the int8 range. We hold the scale factor in MEM so it can be reused later to multiply back to its original values, or as close as possible.</p>
 </section>
-<section id="section-11"><p class="section-label">11 / Instruction control</p><h2>ICU</h2>
+<section id="section-11"><p class="section-label">11 / Positional embeddings</p><h2>Positional Embeddings &amp; RoPE!</h2>
+<p>So far, we have covered how a sentence gets tokenized, converted to IDs, mapped to embedding vectors. So the model right now before training can successfully observe words within a sentence as vectors. Let’s use the phrase “thinking machines” as an example here on out.</p>
+<p>As previously learned, we can represent this phrase as vectors.</p>
+<figure class="media-block original-media rope-media rope-embedding-media"><div class="media-stage"><img src="rope-originals/RoPE_vectors.png" alt="Embedding vectors for thinking and machines" loading="lazy" /></div><figcaption>The phrase “thinking machines” represented as two embedding vectors.</figcaption></figure>
+<p>However, one flaw at the moment within the embeddings is that the model has no idea which order these words are in. If we extend this sentence to something like “thinking helps machines.” The model may understand which action is being done, but it may not be able to distinguish between thinking, help, and machine, as it is not aware of their positions. “Machines help thinking” is mathematically similar to “thinking helps machines.” So here comes RoPE! RoPE stands for “Rotary Positional Embeddings”.</p>
+<p>The entire idea for RoPE is to “rotate” a vector based on the position.</p>
+<figure class="media-block original-media rope-media rope-graph-media"><div class="media-stage"><img src="rope-originals/embedmatrix-rope-graph.png" alt="Five vectors rotated according to token position" loading="lazy" /></div><figcaption>Each token position rotates the vector farther from its original direction.</figcaption></figure>
+<p>In this graph, you see vectors for 5 tokens. The first one (m = 1) is at the vector's original position, and then m = 2 is rotated slightly away from one, m = 3 is rotated even more, and so forth. So when the model observes these tokens, it notices immediately which one came first, second, third, etc. Furthermore, none of the actual information the vector wants to convey gets altered, only the direction of the vector changes. This is a way for the model to see where the word is in the sentence geometrically in space without remembering, or counting.<sup class="footnote-ref" id="footnote-ref-12"><a href="#footnote-12" aria-label="Footnote 12">12</a></sup></p>
+<div class="number-conversion-example rope-calculation-example" aria-label="Step-by-step RoPE calculation for a six-value token vector">
+  <h3>Example: rotating the second token with RoPE</h3>
+  <p>Let’s dive deeper into RoPE with a sample calculation. In an actual setting, a vector could have hundreds of elements. However, for the sake of simplicity, let’s walk through an example with just 6.</p>
+  <ol class="conversion-steps">
+    <li>
+      <strong>Start with the token vector and its position.</strong>
+      <p>Let’s say we have a vector that represents the second token in a sentence. Since the positions index from 0, the second token has a position of \(p=1\). We can represent it as:</p>
+      <div class="equation equation-stack">
+        \[\mathbf{x}=\begin{bmatrix}1&0&1&0&1&0\end{bmatrix}^{T}\]
+        \[p=1,\qquad d_{\text{model}}=6\]
+      </div>
+      <p>As you can see, the vector has 6 elements, so \(d_{\text{model}}=6\).</p>
+    </li>
+    <li>
+      <strong>Split the vector into pairs.</strong>
+      <p>It is hard to imagine rotating one vector across 6 dimensions. Therefore, we split the vector into pairs of 2. That way, we go from one 6D vector to three smaller 2D vectors:</p>
+      <div class="equation equation-stack">
+        \[\mathbf{x}^{(0)}=\begin{bmatrix}1\\0\end{bmatrix},\qquad \mathbf{x}^{(1)}=\begin{bmatrix}1\\0\end{bmatrix}\]
+        \[\mathbf{x}^{(2)}=\begin{bmatrix}1\\0\end{bmatrix}\]
+      </div>
+      <p>The superscripts \((0)\), \((1)\), and \((2)\) are the indexes for the three pairs. Each pair will now be rotated by its own angle.</p>
+    </li>
+    <li>
+      <strong>Calculate the angle for each pair.</strong>
+      <p>Now it’s time to calculate the angle at which each pair will rotate. The angle is given as:</p>
+      <div class="equation">\[\theta_{p,i}=p\cdot 10000^{-\frac{2i}{d_{\text{model}}}}\]</div>
+      <p>The \(i\) indicates the index of each pair, so the first one starts with \(i=0\), and it increments by 1. The \(p\) is the position of the token in the sentence, so our second token has \(p=1\). The number \(10000\) is a constant, and \(d_{\text{model}}\) is the number of elements in the full vector. Applying the formula with \(p=1\) and \(d_{\text{model}}=6\) gives:</p>
+      <div class="equation">\[\theta_{1,i}=10000^{-\frac{2i}{6}}\]</div>
+      <div class="equation equation-stack">
+        \[\theta_{1,0}=10000^{0}=1\text{ rad}\approx57.30^{\circ}\]
+        \[\theta_{1,1}\approx0.0464\text{ rad}\approx2.66^{\circ}\]
+        \[\theta_{1,2}\approx0.00215\text{ rad}\approx0.123^{\circ}\]
+      </div>
+      <p>Radians are just another way to measure angles, like degrees. As we can see, the first pair rotates the most, and each pair after it rotates by a smaller amount.</p>
+    </li>
+    <li>
+      <strong>Put each angle into the rotation matrix.</strong>
+      <p>Now that we have the angles, we can apply the rotations. For a pair \(\begin{bmatrix}a&b\end{bmatrix}^{T}\), we use the following rotation matrix:</p>
+      <div class="equation">\[R(\theta)=\begin{bmatrix}\cos\theta&-\sin\theta\\\sin\theta&\cos\theta\end{bmatrix}\]</div>
+      <p>The \(\cos\) and \(\sin\) values describe the new direction of the pair after it rotates. Multiplying the matrix by \(a\) and \(b\) gives us two new values:</p>
+      <div class="equation equation-stack">
+        \[a'=a\cos\theta-b\sin\theta\]
+        \[b'=a\sin\theta+b\cos\theta\]
+      </div>
+    </li>
+    <li>
+      <strong>Rotate all three pairs.</strong>
+      <p>In our example, every pair is \(\begin{bmatrix}1&0\end{bmatrix}^{T}\). This makes the calculation simpler, as each rotated pair becomes \(\begin{bmatrix}\cos\theta&\sin\theta\end{bmatrix}^{T}\). Let’s apply the first angle:</p>
+      <div class="equation equation-stack">
+        \[\mathbf{x}'^{(0)}=R(1)\begin{bmatrix}1\\0\end{bmatrix}\]
+        \[\mathbf{x}'^{(0)}=\begin{bmatrix}\cos(1)\\\sin(1)\end{bmatrix}\approx\begin{bmatrix}0.5403\\0.8415\end{bmatrix}\]
+      </div>
+      <p>Now we repeat the same calculation with the other two angles:</p>
+      <div class="equation equation-stack">
+        \[\mathbf{x}'^{(1)}\approx\begin{bmatrix}0.9989\\0.0464\end{bmatrix}\]
+        \[\mathbf{x}'^{(2)}\approx\begin{bmatrix}1.0000\\0.00215\end{bmatrix}\]
+      </div>
+    </li>
+    <li>
+      <strong>Join the rotated pairs back together.</strong>
+      <p>After applying the rotation to each pair, we simply concatenate them back together in their original order:</p>
+      <div class="equation equation-stack">
+        \[\mathbf{x}_{\text{RoPE}}=\operatorname{RoPE}(\mathbf{x},p=1)\]
+        \[\mathbf{x}_{\text{RoPE}}\approx\begin{bmatrix}0.5403\\0.8415\\0.9989\\0.0464\\1.0000\\0.00215\end{bmatrix}\]
+      </div>
+      <p>Now we have one 6D vector again! The values have changed because the vector points in a new direction, but the vector has not been stretched or compressed.</p>
+    </li>
+    <li>
+      <strong>Check that the vector keeps the same length.</strong>
+      <p>Before we finish, let’s make sure the rotation did not change the length of the vector. Before rotation, each pair has a length squared of \(1^{2}+0^{2}=1\). Adding the three pairs gives:</p>
+      <div class="equation equation-stack">
+        \[\left\lVert\mathbf{x}^{(i)}\right\rVert^{2}=1^{2}+0^{2}=1\]
+        \[\lVert\mathbf{x}\rVert^{2}=1+1+1=3\]
+        \[\lVert\mathbf{x}\rVert=\sqrt{3}\]
+      </div>
+      <p>Each rotated pair also has a length of 1 because \(\cos^{2}\theta+\sin^{2}\theta=1\). Therefore, the complete rotated vector has the same length:</p>
+      <div class="equation equation-stack conversion-check">
+        \[\left\lVert\mathbf{x}_{\text{RoPE}}\right\rVert^{2}=1+1+1=3\]
+        \[\left\lVert\mathbf{x}_{\text{RoPE}}\right\rVert=\sqrt{3}\]
+      </div>
+    </li>
+  </ol>
+  <p class="stored-value">As we can see, RoPE changes the direction of the vector, but not its length. At \(p=0\), every angle is 0 and the vector does not rotate. At \(p=2\), every angle is twice as large as it was at \(p=1\). This is how the model can use the direction of a vector to understand where a token appears in a sentence!</p>
+</div>
+</section>
+<section id="section-12"><p class="section-label">12 / Instruction control</p><h2>ICU</h2>
 <p>Now let&#x27;s discuss how the compiler actually talks to the LPU. In the LPU, we have something called an Instruction Control Unit (ICU). As we have mentioned, the core idea of the LPU is that the hardware is dumb and doesn&#x27;t know how to handle different types of AI models; the compiler is what tells the chip how to run them. The compiler would generate a 96-bit-long binary string and send it to the ICU. When the ICU receives this string, it starts to unpack it and send specific bits off to different parts of the chip.</p>
 <p>Each bit in the string is assigned to a different location on the chip, and it looks like this,</p>
 <figure class="media-block original-media icu-isa-media"><div class="media-stage"><img src="draft1-originals/isa.png" alt="The 96-bit ICU instruction layout" loading="lazy" /></div><figcaption>The 96-bit instruction assigns dedicated fields to every LPU module and the bus routing.</figcaption></figure>
@@ -338,14 +431,14 @@
 <p>Let&#x27;s take a quick look back at the VXM for a second.</p>
 <figure class="media-block original-media icu-secondary-media"><div class="media-stage"><img src="draft1-originals/bypass.png" alt="Bias Add bypass path feeding a multiplexer" loading="lazy" /></div><figcaption>The bypass wire lets data skip an operation before entering the MUX.</figcaption></figure>
 <p>You can see how the output of scale and the input of scale both feed into the MUX. The compiler will send its instructions to the ICU, and then the bit assigned to that MUX decides whether scale should be used or bypassed, all happening in nanoseconds!</p>
-<p>The ISA (Instruction Set Architecture) handles data movement very efficiently using a system that we designed. The first path is the westbound bus, where data can only travel from the east to the west. The second path is the eastbound bus, which handles data movement from the west to the east. To keep the system flowing fast without any stalls, each direction only has one unit sending data and one unit receiving it per instruction. However, both the east and westbound buses can be used together for a single instruction. We built the buses using a simple MUX to DEMUX architecture. It works like a railroad switch where the compiler is the one controlling the switch. A combination of bits go into the MUX which flows from one of the buses and it’s received in the other end through a DEMUX. From there, it sends the data to the correct module.</p>
+<p>The ISA (Instruction Set Architecture) handles data movement very efficiently using a system that we designed. The first path is the westbound bus, where data can only travel from the east to the west. The second path is the eastbound bus, which handles data movement from the west to the east. To keep the system flowing fast without any stalls, each direction only has one unit sending data and one unit receiving it per instruction. However, both the east and westbound buses can be used together for a single instruction. We built the buses using a simple MUX to DEMUX<sup class="footnote-ref" id="footnote-ref-13"><a href="#footnote-13" aria-label="Footnote 13">13</a></sup> architecture. It works like a railroad switch where the compiler is the one controlling the switch. A combination of bits go into the MUX which flows from one of the buses and it’s received in the other end through a DEMUX. From there, it sends the data to the correct module.</p>
 <figure class="media-block original-media icu-secondary-media"><div class="media-stage"><img src="draft1-originals/muxdemux.png" alt="MUX-to-DEMUX bus routing" loading="lazy" /></div><figcaption>The compiler-controlled MUX and DEMUX route each transfer to the correct module.</figcaption></figure>
 </section>
-<section id="section-12"><p class="section-label">12 / On-chip memory</p><h2>Memory Hierarchy</h2>
+<section id="section-13"><p class="section-label">13 / On-chip memory</p><h2>Memory Hierarchy</h2>
 <p>The memory in an LPU is stored on the chip itself in something called SRAM, which is just a collection of buffers and registers. This is very different compared to the memory hierarchy of other AI accelerators.</p>
 <figure class="media-block original-media"><div class="media-stage"><img src="draft1-originals/mem-hierarchy.png" alt="GPU memory hierarchy" loading="lazy" /></div><figcaption>A conventional GPU trades speed and capacity across registers, cache, RAM, and storage.</figcaption></figure>
-<p>This former diagram is the memory hierarchy in a GPU, We notice a relationship with the size of storage: the smaller the storage, the faster it is to retrieve an element; the larger the storage, the slower it is. Registers and Cache cost more per area on the chip, and the slower memory storage, RAM and SSD, are cheaper. When they are all used together, the cost is minimized, and performance is maximized.</p>
-<p>The LPU decided to completely go against memory hierarchies so it does not have to keep fetching data and instructions from DRAM or HBM. Instead, the only MEM that exists on the LPU is on-chip memory, meaning the memory you see in the animation is the only memory that exists.</p>
+<p>This former diagram is the memory hierarchy in a GPU<sup class="footnote-ref" id="footnote-ref-14"><a href="#footnote-14" aria-label="Footnote 14">14</a></sup>, We notice a relationship with the size of storage: the smaller the storage, the faster it is to retrieve an element; the larger the storage, the slower it is. Registers and Cache cost more per area on the chip, and the slower memory storage, RAM and SSD, are cheaper. When they are all used together, the cost is minimized, and performance is maximized.</p>
+<p>The LPU decided to completely go against memory hierarchies so it does not have to keep fetching data and instructions from DRAM or HBM<sup class="footnote-ref" id="footnote-ref-15"><a href="#footnote-15" aria-label="Footnote 15">15</a></sup>. Instead, the only MEM that exists on the LPU is on-chip memory, meaning the memory you see in <a class="inline-jump" href="#lpu-forward-pass-animation">the animation</a> is the only memory that exists.</p>
 <p>While working with transformers, we run into two specific bottlenecks: memory-bound workloads and compute-bound workloads.</p>
 <p>When the processor spends more time retrieving elements from memory than actual arithmetic operations, a memory-bound workload occurs.</p>
 <p>A compute-bound workload is when the arithmetic operations are the bottlenecks. The memory feeds the arithmetic units, but they are not fast enough or have reached maximum capacity on the task at hand.</p>
@@ -356,9 +449,9 @@
 <p>However, since an LPU does not follow a memory hierarchy and only includes SRAM, this means it does not have a large amount of storage, making the KV cache harder to maintain, whereas DRAM or HBM have large amounts of storage capabilities making it a much better fit for KV cache.</p>
 <p>Coming back to how memory on an LPU works, the entire hierarchy is completely disregarded! Large amounts of SRAM (caches) are on the chip, so since there is no hierarchy to follow, the LPU does really well navigating memory-bound workloads like decode.</p>
 <p>Let’s take a look at traditional GPUs really quickly. GPUs are packed with thousands of cores that perform arithmetic calculations, so they are amazing at compute-bound workloads like prefill. But they rely on the memory hierarchy, so they aren’t as great at memory-bound workloads like decode.</p>
-<p>After learning this, we guessed that Nvidia acquired licensing rights to Groq’s LPU to build some sort of inference disaggregation system that does compute-bound workloads on the GPU, and memory-bound workloads on the LPU. This also mitigates potential KV caching issues an LPU would hold by using the GPU for the KV cache!</p>
+<p>After learning this, we guessed that Nvidia acquired licensing rights to Groq’s LPU to build some sort of inference disaggregation system that does compute-bound workloads on the GPU, and memory-bound workloads on the LPU.<sup class="footnote-ref" id="footnote-ref-16"><a href="#footnote-16" aria-label="Footnote 16">16</a></sup> This also mitigates potential KV caching issues an LPU would hold by using the GPU for the KV cache!</p>
 </section>
-<section id="section-13"><p class="section-label">13 / Number formats</p><h2>Numerics</h2>
+<section id="section-14"><p class="section-label">14 / Number formats</p><h2>Numerics</h2>
 <p>To represent the actual numbers that the chip used, we originally used an 8-bit integer for our data. Integer arithmetic is the easiest to implement in hardware. It is also the cheapest and fastest when it comes to multipliers and adders relative to other formats. Inputs, Weights, Outputs, or anything that is to be stored in the MEM blocks is 8 bits. 8 bits was the perfect compromise between speed, efficiency, and numerical accuracy.</p>
 <p>However, the nature of int8 did cause a couple of problems. Signed Int8 is in the range -128 &lt; x &lt; 127, and in traditional int8, there are no decimals. Meaning the range of values was super small (only 256 values in total) to represent individual features.</p>
 <p>We then researched numerical formats used for modern ML accelerators, and we came across the two most popular formats, floating-point &amp; integer-fixed-point.</p>
@@ -401,7 +494,7 @@
   <p class="stored-value">So 5.75 is represented by the nearest E5M2 value, 6.0.</p>
 </div>
 <p>Therefore, floating-point math is really convenient for machine learning as it has a large numerical range! However, for how convenient it is, there are also many drawbacks. For starters, in 8-bit integers, a common multiply or add might be almost instant, whereas for floating-point it has to factor in signs, exponents, etc before multiply or add can be done. This makes the complexity of floating-point very high.</p>
-<p>This helped us realize that for this project a numerical format as complex as floating-point may be too “overkill.” We went on with it anyway, using the CVFPU library. Upon our first step at synthesizing this design, we ran into many errors as this library was incompatible with our FPGA (despite working well on testbench simulations).</p>
+<p>This helped us realize that for this project a numerical format as complex as floating-point may be too “overkill.” We went on with it anyway, using the CVFPU library<sup class="footnote-ref" id="footnote-ref-17"><a href="#footnote-17" aria-label="Footnote 17">17</a></sup>. Upon our first step at synthesizing this design, we ran into many errors as this library was incompatible with our FPGA (despite working well on testbench simulations<sup class="footnote-ref" id="footnote-ref-18"><a href="#footnote-18" aria-label="Footnote 18">18</a></sup>).</p>
 <p>We then pivoted to fixed-point. Fixed-point numbers work differently; imagine having to represent the amount $12.34 in cents. You get 1234; however, you know that the cents will always be the 2 spots after a decimal. That is the motivation behind fixed points; the word “fixed” comes from the fact that there is a fixed place where the decimal value will be.</p>
 <figure class="media-block original-media"><div class="media-stage"><img src="draft1-originals/fixed-point.png" alt="Fixed-point representation" loading="lazy" /></div><figcaption>Fixed-point reserves a fixed number of positions for the fractional value.</figcaption></figure>
 <div class="number-conversion-example fixed-conversion" aria-label="Example converting 12.5 to the fixed-point format">
@@ -439,7 +532,7 @@
 </div>
 <p>Though fixed points do have the benefits of providing a larger range of numerical explanations, it also mitigates the complexity of hardware, which made this a home run decision for us.</p>
 </section>
-<section id="section-14"><p class="section-label">14 / Reflection</p><h2>Reflection</h2>
+<section id="section-15"><p class="section-label">15 / Reflection</p><h2>Reflection</h2>
 <p>Looking at our journey, we are extremely proud of what we have built after starting off with no prior chip design knowledge. Our biggest takeaway from the project was to approach everything with a first-principles approach. You don’t have to know everything before trying something crazy. You can learn as you go. By breaking the project down into tiny pieces, we were able to solve problems that seemed impossible at first glance.</p>
 <p>Our biggest weapon was not some crazy tool that nobody knows about; it was a pen and a piece of paper. Drawing everything out, no matter what we were working on, helped us visualize the problem at hand and helped us immensely in the ideation process. It made us think about the hardware physically before a single line of code was written.</p>
 <p>As we had mentioned at the beginning, one big reason we wanted to work on this project together was to move away from being fully reliant on AI. We drew everything out, discussed different ways to approach problems and solutions to those problems, and only after that did we use AI to accelerate the coding after understanding every element of our design. We had complete ownership and proved to ourselves that in today’s age, we could still think and figure things out ourselves.</p>
@@ -447,11 +540,37 @@
 <p>Our current focus is building a compiler to handle all the instruction scheduling, tiling and chunking and have the LPU run completely on our custom instructions.</p>
 <p>Since we have proven that our design works on a small parameter model, our next goal is to push the hardware to run on a much larger model from 4.9k to 260k and scale our memory and compiler along with it.</p>
 </section>
-<section id="section-15"><p class="section-label">15 / Implementation</p><h2>FPGA Implementation</h2>
+<section id="section-16"><p class="section-label">16 / Implementation</p><h2>FPGA Implementation</h2>
 <h3 class="implementation-note">Note: This info is a little harder to grasp, it is for those who are interested in how we synthesized the LPU on an FPGA.</h3>
 <p>We used a Tersaic DE1-SOC development board to implement our design. We used Cocotb to test all the modules and our logic during the design process. Testbenches were really important as they helped us identify any mistakes and test edge cases for our RTL designs (we were able to identify the softmax division bottleneck because of this!) After the completion of our design, we measured ~8.5k tok/s (tokens per second) when running inference of MicroGPT using CocoTB.</p>
 <p>When we brought up the design on the FPGA, it was extremely dense and ended up using 100% of the potential logic blocks, which forced us to lower our clock frequency from 100 MHz to 6.75 MHz. This means we would have a clock edge every 160ns on the FPGA, from 10ns on CocoTB. This disparity was one of the reasons why our FPGA tok/s came out to be 20.</p>
 <p>Theoretically, the 8500 tok/s can be brought down to 530 tok/s simply due to the clock frequency decrease; the rest of the reduction of tok/s can be attributed to other overheads.</p>
+</section>
+<section class="footnotes" id="footnotes" aria-labelledby="footnotes-title">
+<p class="section-label">References</p>
+<h2 id="footnotes-title">Footnotes</h2>
+<ol>
+  <li id="footnote-1"><p><strong>Register-Transfer Level (RTL).</strong> The language that describes the flow and manipulation of data in a digital circuit as it moves between hardware registers using coding languages like Verilog or VHDL. <a class="footnote-backref" href="#footnote-ref-1" aria-label="Back to footnote 1 reference">↩</a></p></li>
+  <li id="footnote-2"><p><strong>Verilog.</strong> A coding language used in hardware to design, simulate, and synthesize digital electronic circuits and microchips. <a class="footnote-backref" href="#footnote-ref-2" aria-label="Back to footnote 2 reference">↩</a></p></li>
+  <li id="footnote-3"><p><strong>Clock Cycle.</strong> A single electrical pulse or “tick” of a computer's internal clock. It defines the fundamental unit of time used by the chip to synchronize and execute basic operations. <a class="footnote-backref" href="#footnote-ref-3" aria-label="Back to footnote 3 reference">↩</a></p></li>
+  <li id="footnote-4"><p><strong>Application-Specific Integrated Circuit (ASIC).</strong> A microchip custom-built for one specific task rather than for general-purpose computing. <a class="footnote-backref" href="#footnote-ref-4" aria-label="Back to footnote 4 reference">↩</a></p></li>
+  <li id="footnote-5"><p><span class="source-citation">Sure, Surya. <a href="https://www.suryasure.com/articles/decomposing-systolic-arrays" target="_blank" rel="noreferrer">“Decomposing Systolic Arrays.”</a> <cite>Surya Sure</cite>, n.d. Accessed August 22, 2026.</span> <a class="footnote-backref" href="#footnote-ref-5" aria-label="Back to footnote 5 reference">↩</a></p></li>
+  <li id="footnote-6"><p><span class="source-citation">Alammar, Jay. <a href="https://jalammar.github.io/illustrated-transformer/" target="_blank" rel="noreferrer">“The Illustrated Transformer.”</a> <cite>Jay Alammar</cite>, June 27, 2018. Accessed August 22, 2026.</span> <a class="footnote-backref" href="#footnote-ref-6" aria-label="Back to footnote 6 reference">↩</a></p></li>
+  <li id="footnote-7"><p><span class="source-citation">Dubey, Avinash. <a href="https://medium.com/data-science/how-a-neuron-in-a-2d-artificial-neural-network-bends-space-in-3d-visualization-d234e8a8374e" target="_blank" rel="noreferrer">“How a Neuron in a 2D Artificial Neural Network Bends Output in 3D—Visualization.”</a> <cite>TDS Archive</cite>, Medium, September 23, 2019. Accessed August 22, 2026.</span> <a class="footnote-backref" href="#footnote-ref-7" aria-label="Back to footnote 7 reference">↩</a></p></li>
+  <li id="footnote-8"><p><strong>Sigmoid and GeLU.</strong> These are examples of more activation functions and not necessary to this article. <span class="source-citation">Ankita. <a href="https://medium.com/@chaudharyankita667/understanding-the-different-types-of-activation-functions-in-neural-networks-989e439e2018" target="_blank" rel="noreferrer">“Understanding the Different Types of Activation Functions in Neural Networks.”</a> <cite>Medium</cite>, April 3, 2025. Accessed August 22, 2026.</span> <a class="footnote-backref" href="#footnote-ref-8" aria-label="Back to footnote 8 reference">↩</a></p></li>
+  <li id="footnote-9"><p><strong>Vector add/Residual add.</strong> Combines two equal-sized arrays or tensors by adding their corresponding element values together index by index. <a class="footnote-backref" href="#footnote-ref-9" aria-label="Back to footnote 9 reference">↩</a></p></li>
+  <li id="footnote-10"><p><strong>Groq.</strong> A company that specializes in AI infrastructure and cloud services. Also the original inventor of the Language Processing Unit (LPU). <span class="source-citation">Groq, Inc. <a href="https://groq.com/" target="_blank" rel="noreferrer">“Groq.”</a> Accessed August 22, 2026.</span> <a class="footnote-backref" href="#footnote-ref-10" aria-label="Back to footnote 10 reference">↩</a></p></li>
+  <li id="footnote-11"><p><span class="source-citation">SurjaHead. <a href="https://github.com/SurjaHead/softmax-in-hardware" target="_blank" rel="noreferrer">“softmax-in-hardware: Pipelined Design to Perform the Softmax Computation in Hardware.”</a> <cite>GitHub</cite>, repository, n.d. Accessed August 22, 2026.</span> <a class="footnote-backref" href="#footnote-ref-11" aria-label="Back to footnote 11 reference">↩</a></p></li>
+  <li id="footnote-12"><p><span class="source-citation">Fleetwood, Christopher. <a href="https://huggingface.co/blog/designing-positional-encoding" target="_blank" rel="noreferrer">“You Could Have Designed State of the Art Positional Encoding.”</a> <cite>Hugging Face</cite>, November 25, 2024. Accessed August 22, 2026.</span> <a class="footnote-backref" href="#footnote-ref-12" aria-label="Back to footnote 12 reference">↩</a></p></li>
+  <li id="footnote-13"><p><strong>DMUX.</strong> The opposite of a MUX, where you have one input and the selection bits allow you to choose which output to go to, whereas in a MUX you have multiple inputs and one output. <a class="footnote-backref" href="#footnote-ref-13" aria-label="Back to footnote 13 reference">↩</a></p></li>
+  <li id="footnote-14"><p><span class="source-citation">Gordić, Aleksa. <a href="https://www.aleksagordic.com/blog/matmul" target="_blank" rel="noreferrer">“Inside NVIDIA GPUs: Anatomy of High Performance Matmul Kernels.”</a> <cite>Aleksa Gordić</cite>, September 29, 2025. Accessed August 22, 2026.</span> <a class="footnote-backref" href="#footnote-ref-14" aria-label="Back to footnote 14 reference">↩</a></p></li>
+  <li id="footnote-15"><p><strong>DRAM (Dynamic Random-Access Memory).</strong> Standard computer memory that stores active data in a flat 2D grid. <strong>HBM (High Bandwidth Memory).</strong> An advanced, high-speed version of DRAM that stacks those memory layers vertically directly next to the processor. <a class="footnote-backref" href="#footnote-ref-15" aria-label="Back to footnote 15 reference">↩</a></p></li>
+  <li id="footnote-16"><p>In December 2025, Nvidia entered into a $20 billion Groq transaction structured as a non-exclusive technology licensing and asset agreement rather than a formal corporate buyout. The arrangement allowed Nvidia to license Groq’s Language Processing Unit (LPU) inference technology, acquire key physical assets, and hire founder Jonathan Ross alongside core Silicon Valley engineering talent. <span class="source-citation">Groq, Inc. <a href="https://groq.com/newsroom/groq-and-nvidia-enter-non-exclusive-inference-technology-licensing-agreement-to-accelerate-ai-inference-at-global-scale" target="_blank" rel="noreferrer">“Groq and Nvidia Enter Non-Exclusive Inference Technology Licensing Agreement to Accelerate AI Inference at Global Scale.”</a> <cite>Groq Newsroom</cite>, December 24, 2025. Accessed August 22, 2026.</span> <a class="footnote-backref" href="#footnote-ref-16" aria-label="Back to footnote 16 reference">↩</a></p></li>
+  <li id="footnote-17"><p><strong>CVFPU.</strong> An open-source, floating-point unit written in SystemVerilog that supports standard RISC-V and transprecision data formats for processors. <span class="source-citation">OpenHW Group. <a href="https://github.com/openhwgroup/cvfpu" target="_blank" rel="noreferrer">“cvfpu: Parametric Floating-Point Unit with Support for Standard RISC-V Formats and Operations as Well as Transprecision Formats.”</a> <cite>GitHub</cite>, repository, n.d. Accessed August 22, 2026.</span> <a class="footnote-backref" href="#footnote-ref-17" aria-label="Back to footnote 17 reference">↩</a></p></li>
+  <li id="footnote-18"><p><strong>TestBench.</strong> A virtual simulation environment used to apply test inputs to a design and check its behaviour before building the physical circuit. <a class="footnote-backref" href="#footnote-ref-18" aria-label="Back to footnote 18 reference">↩</a></p></li>
+  <li id="footnote-19"><p><span class="source-citation">Abts, Dennis, et al. <a href="https://doi.org/10.1109/ISCA45697.2020.00023" target="_blank" rel="noreferrer">“Think Fast: A Tensor Streaming Processor (TSP) for Accelerating Deep Learning Workloads.”</a> <cite>2020 ACM/IEEE 47th Annual International Symposium on Computer Architecture (ISCA)</cite>, Valencia, Spain, IEEE, 2020, pp. 145–158. doi: 10.1109/ISCA45697.2020.00023. Accessed August 22, 2026.</span></p></li>
+  <li id="footnote-20"><p><span class="source-citation">Abts, Dennis, et al. <a href="https://dl.acm.org/doi/10.1145/3470496.3527405" target="_blank" rel="noreferrer">“A Software-Defined Tensor Streaming Multiprocessor for Large-Scale Machine Learning.”</a> <cite>Proceedings of the 49th Annual International Symposium on Computer Architecture (ISCA ’22)</cite>, Association for Computing Machinery, 2022, pp. 567–580. doi: 10.1145/3470496.3527405. Accessed August 22, 2026.</span></p></li>
+</ol>
 </section>
 </article>
 </main>
