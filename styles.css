@@ -839,7 +839,12 @@ article .footnotes li p {
 }
 
 .footnotes a:hover { color: var(--accent); text-decoration-color: var(--accent); }
-.footnote-backref { margin-left: 0.22em; font-weight: 600; text-decoration: none !important; }
+.footnote-backref {
+  margin-left: 0.4em;
+  font-size: 0.82em;
+  font-weight: 600;
+  white-space: nowrap;
+}
 .source-citation cite { font-style: italic; }
 
 @media (max-width: 700px) {
