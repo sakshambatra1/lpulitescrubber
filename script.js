@@ -1,15 +1,18 @@
+const animationFrameInterval = 1500;
+
 const slideshows = {
   main: {
     frames: [
       "main_animation/LPU-Anim.png",
       ...Array.from({ length: 44 }, (_, index) => `main_animation/LPU-Anim-${index + 2}.png`),
     ],
-    interval: 650,
+    interval: animationFrameInterval,
     alt: (index) => `LPU Lite forward-pass architecture, frame ${index + 1}`,
   },
   comparison: {
     frames: ["draft1-originals/sysarray.png", "draft1-originals/mxm4x4.png"],
     titles: ["Systolic array", "LPU Lite MXM"],
+    interval: animationFrameInterval,
     alt: (index) => index === 0 ? "Systolic array wiring" : "LPU Lite MXM wiring",
   },
   mxm: {
@@ -17,51 +20,74 @@ const slideshows = {
       "LPU-Lite-assets/mxm_anim/mxm_anim.png",
       ...Array.from({ length: 5 }, (_, index) => `LPU-Lite-assets/mxm_anim/mxm_anim-${index + 2}.png`),
     ],
-    interval: 850,
+    interval: animationFrameInterval,
     alt: (index) => `MXM animation frame ${index + 1}`,
   },
   "vxm-v2": {
     frames: ["vxm-v2-anim/vxm-v2.png", ...Array.from({ length: 3 }, (_, index) => `vxm-v2-anim/vxm-v2-${index + 2}.png`)],
-    interval: 900,
+    interval: animationFrameInterval,
     alt: (index) => `VXM v2 pipeline animation frame ${index + 1}`,
   },
   chunking: {
     frames: ["chunking-anim/chunking.png", ...Array.from({ length: 15 }, (_, index) => `chunking-anim/chunking-${index + 2}.png`)],
-    interval: 750,
+    interval: animationFrameInterval,
     alt: (index) => `RMSNorm chunking animation frame ${index + 1}`,
   },
   buffering: {
     frames: ["buffering-anim/buffering-mxm.png", ...Array.from({ length: 4 }, (_, index) => `buffering-anim/buffering-mxm-${index + 2}.png`)],
-    interval: 850,
+    interval: animationFrameInterval,
     alt: (index) => `MXM double buffering animation frame ${index + 1}`,
   },
 };
 
 function setupSlideshow(root) {
   const config = slideshows[root.dataset.slideshow];
-  const image = root.querySelector(".slide-stage img");
+  const stage = root.querySelector(".slide-stage");
+  const image = root.querySelector(".slide-stage > img");
   const title = root.querySelector("[data-title]");
   const count = root.querySelector("[data-count]");
   const playButton = root.querySelector('[data-action="play"]');
+  const controls = root.querySelector(".slide-controls");
+  const controlCount = document.createElement("span");
+  controlCount.className = "control-frame-count";
+  controlCount.setAttribute("aria-live", "polite");
+  playButton.insertAdjacentElement("afterend", controlCount);
+
   let index = 0;
   let timer = null;
+  let queuedFrame = null;
+
+  function normalizedIndex(nextIndex) {
+    return (nextIndex + config.frames.length) % config.frames.length;
+  }
 
   function preload(nextIndex) {
+    const frameIndex = normalizedIndex(nextIndex);
+    if (queuedFrame?.index === frameIndex) return queuedFrame.promise;
     const preloadImage = new Image();
-    preloadImage.src = config.frames[nextIndex];
+    const promise = new Promise((resolve) => {
+      preloadImage.addEventListener("load", resolve, { once: true });
+      preloadImage.addEventListener("error", resolve, { once: true });
+    });
+    queuedFrame = { index: frameIndex, image: preloadImage, promise };
+    preloadImage.src = config.frames[frameIndex];
+    return promise;
   }
 
   function render(nextIndex) {
-    index = (nextIndex + config.frames.length) % config.frames.length;
+    index = normalizedIndex(nextIndex);
     image.src = config.frames[index];
     image.alt = config.alt(index);
-    if (title) title.textContent = config.titles[index];
+    if (title && config.titles) title.textContent = config.titles[index];
     if (count) count.textContent = `${index + 1} / ${config.frames.length}`;
+    controlCount.textContent = `${index + 1} / ${config.frames.length}`;
+    controlCount.setAttribute("aria-label", `Frame ${index + 1} of ${config.frames.length}`);
+    magnifier?.updateFrame(config.frames[index]);
     preload((index + 1) % config.frames.length);
   }
 
   function stop() {
-    window.clearInterval(timer);
+    window.clearTimeout(timer);
     timer = null;
     if (playButton) {
       playButton.classList.remove("is-playing");
@@ -69,21 +95,121 @@ function setupSlideshow(root) {
     }
   }
 
+  async function playNextFrame() {
+    const nextIndex = index + 1;
+    await preload(nextIndex);
+    if (timer === null) return;
+    render(nextIndex);
+    if (index === config.frames.length - 1) {
+      stop();
+      return;
+    }
+    timer = window.setTimeout(playNextFrame, config.interval);
+  }
+
   function togglePlay() {
     if (timer) return stop();
+    if (index === config.frames.length - 1) render(0);
     playButton.classList.add("is-playing");
     playButton.setAttribute("aria-label", "Pause animation");
-    timer = window.setInterval(() => {
-      if (index === config.frames.length - 1) return stop();
-      render(index + 1);
-    }, config.interval);
+    timer = window.setTimeout(playNextFrame, config.interval);
   }
+
+  function setupMagnifier() {
+    if (root.dataset.slideshow !== "main") return null;
+    const toggle = controls.querySelector('[data-action="magnify"]');
+    if (!toggle) return null;
+
+    const lens = document.createElement("span");
+    lens.className = "magnifier-lens";
+    lens.setAttribute("aria-hidden", "true");
+    const lensImage = document.createElement("img");
+    lensImage.alt = "";
+    lensImage.draggable = false;
+    const prompt = document.createElement("span");
+    prompt.className = "magnifier-prompt";
+    prompt.textContent = "Click the animation to choose an area";
+    lens.append(lensImage, prompt);
+    stage.append(lens);
+
+    const state = { enabled: false, point: null };
+    const zoom = 1.75;
+    const defaultStageLabel = stage.getAttribute("aria-label");
+
+    function showAt(normalizedX, normalizedY) {
+      const imageRect = image.getBoundingClientRect();
+      if (!imageRect.width || !imageRect.height) return;
+
+      const selectedX = Math.min(1, Math.max(0, normalizedX));
+      const selectedY = Math.min(1, Math.max(0, normalizedY));
+      const x = selectedX * imageRect.width;
+      const y = selectedY * imageRect.height;
+      const lensWidth = lens.offsetWidth;
+      const lensHeight = lens.offsetHeight;
+
+      lensImage.style.width = `${imageRect.width * zoom}px`;
+      lensImage.style.height = `${imageRect.height * zoom}px`;
+      lensImage.style.left = `${lensWidth / 2 - x * zoom}px`;
+      lensImage.style.top = `${lensHeight / 2 - y * zoom}px`;
+      lens.classList.add("is-visible");
+      lens.classList.remove("is-awaiting-selection");
+      state.point = { x: selectedX, y: selectedY };
+    }
+
+    function showFromPointer(event) {
+      const imageRect = image.getBoundingClientRect();
+      const x = (event.clientX - imageRect.left) / imageRect.width;
+      const y = (event.clientY - imageRect.top) / imageRect.height;
+      showAt(x, y);
+    }
+
+    function setEnabled(enabled) {
+      state.enabled = enabled;
+      root.classList.toggle("is-magnifier-enabled", enabled);
+      toggle.setAttribute("aria-pressed", String(enabled));
+      toggle.setAttribute("aria-label", enabled ? "Turn off animation zoom panel" : "Select an animation area to zoom");
+      stage.setAttribute("aria-label", enabled ? "Select an area to magnify" : defaultStageLabel);
+      if (enabled) {
+        lens.classList.add("is-visible");
+        if (state.point) showAt(state.point.x, state.point.y);
+        else lens.classList.add("is-awaiting-selection");
+      } else {
+        lens.classList.remove("is-visible");
+        lens.classList.remove("is-awaiting-selection");
+      }
+    }
+
+    stage.addEventListener("pointerdown", (event) => {
+      if (!state.enabled || (event.pointerType === "mouse" && event.button !== 0)) return;
+      event.preventDefault();
+      showFromPointer(event);
+    });
+    window.addEventListener("resize", () => {
+      if (state.enabled && state.point) showAt(state.point.x, state.point.y);
+    });
+
+    return {
+      get enabled() { return state.enabled; },
+      toggle() { setEnabled(!state.enabled); },
+      updateFrame(source) {
+        lensImage.src = source;
+        if (state.enabled && state.point) requestAnimationFrame(() => showAt(state.point.x, state.point.y));
+      },
+    };
+  }
+
+  const magnifier = setupMagnifier();
 
   root.addEventListener("click", (event) => {
     const action = event.target.closest("[data-action]")?.dataset.action;
     if (!action) return;
-    if (action === "next") render(index + 1);
-    if (action === "previous") render(index - 1);
+    if (action === "magnify") {
+      magnifier?.toggle();
+      return;
+    }
+    if (magnifier?.enabled && action === "next" && event.target.closest(".slide-stage")) return;
+    if (action === "next") { stop(); render(index + 1); }
+    if (action === "previous") { stop(); render(index - 1); }
     if (action === "play") togglePlay();
     if (action === "reset") { stop(); render(0); }
   });
