@@ -59,6 +59,29 @@ h1 {
   letter-spacing: -0.012em;
 }
 
+.hero-socials {
+  display: flex;
+  margin-top: 9px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px 16px;
+  flex-wrap: wrap;
+}
+
+.hero-socials a {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 500;
+  text-decoration-color: rgba(18, 18, 18, 0.22);
+  text-underline-offset: 3px;
+  transition: color 0.18s ease, text-decoration-color 0.18s ease;
+}
+
+.hero-socials a:hover {
+  color: var(--text);
+  text-decoration-color: currentColor;
+}
+
 .slideshow { display: flex; align-items: center; flex-direction: column; }
 
 .main-slideshow { width: min(920px, 68vw); }
