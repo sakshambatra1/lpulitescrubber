@@ -173,13 +173,16 @@ h1 {
   border-radius: 14px;
   background: var(--canvas);
   box-shadow: 0 12px 32px rgba(16, 23, 25, 0.28), 0 0 0 1px rgba(16, 23, 25, 0.18);
+  cursor: grab;
   opacity: 0;
-  pointer-events: none;
+  pointer-events: auto;
+  touch-action: none;
   visibility: hidden;
   transition: opacity 100ms ease;
 }
 
 .magnifier-lens.is-visible { opacity: 1; visibility: visible; }
+.magnifier-lens.is-dragging { cursor: grabbing; }
 
 .magnifier-prompt {
   position: absolute;
@@ -197,6 +200,24 @@ h1 {
 
 .magnifier-lens.is-awaiting-selection .magnifier-prompt { display: flex; }
 .magnifier-lens.is-awaiting-selection img { opacity: 0; }
+
+.magnifier-move-label {
+  position: absolute;
+  z-index: 2;
+  top: 6px;
+  right: 6px;
+  padding: 4px 7px;
+  border: 1px solid rgba(16, 23, 25, 0.12);
+  border-radius: 6px;
+  background: rgba(239, 250, 255, 0.9);
+  color: #435158;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  pointer-events: none;
+  text-transform: uppercase;
+}
 
 .main-slideshow .magnifier-lens img {
   position: absolute;
@@ -548,17 +569,17 @@ figcaption {
 }
 
 /* Requested section-specific media scale. */
-#section-4 figure.original-media { width: min(50%, 390px); }
-#section-4 .comparison,
-#section-4 [data-slideshow="mxm"] { width: min(70%, 532px); }
-#section-4 .comparison .square-stage {
+#section-8 figure.original-media { width: min(50%, 390px); }
+#section-8 .comparison,
+#section-8 [data-slideshow="mxm"] { width: min(70%, 532px); }
+#section-8 .comparison .square-stage {
   width: 100%;
   height: auto;
   max-height: none;
   aspect-ratio: 1;
 }
 
-#section-4 figure.attention-relationship-media {
+#section-7 figure.attention-relationship-media {
   width: min(125%, 975px);
   max-width: none;
   margin-left: 50%;
@@ -960,6 +981,7 @@ article .article-thanks p {
   .control-frame-count { min-width: 64px; height: 44px; padding-inline: 8px; }
   .magnifier-lens { bottom: 8px; left: 8px; width: 168px; height: 112px; border-radius: 10px; }
   .magnifier-prompt { padding: 12px; font-size: 0.68rem; }
+  .magnifier-move-label { top: 4px; right: 4px; padding: 3px 5px; font-size: 0.54rem; }
   article { width: min(100% - 30px, 840px); padding-top: 18px; }
   .article-lede { margin-bottom: 70px; }
   article section { margin-top: 76px; }
@@ -967,7 +989,7 @@ article .article-thanks p {
   h3 { margin-top: 48px; }
   .media-stage { height: 62vw; min-height: 220px; }
   .original-media .media-stage { height: auto; min-height: 0; }
-  #section-4 figure.attention-relationship-media {
+  #section-7 figure.attention-relationship-media {
     width: 100%;
     max-width: 100%;
     margin-left: auto;

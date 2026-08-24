@@ -28,6 +28,16 @@ const slideshows = {
     interval: animationFrameInterval,
     alt: (index) => `VXM v2 pipeline animation frame ${index + 1}`,
   },
+  "vxm-v2-full": {
+    frames: ["vxm-v2-full.png", ...Array.from({ length: 13 }, (_, index) => `vxm-v2-full-anim/vxm-v2-full-${index + 2}.png`)],
+    interval: animationFrameInterval,
+    alt: (index) => `Full VXM v2 animation frame ${index + 1}`,
+  },
+  rmsnorm: {
+    frames: ["rmsnorm-anim/rmsnorm.png", ...Array.from({ length: 19 }, (_, index) => `rmsnorm-anim/rmsnorm-${index + 2}.png`)],
+    interval: animationFrameInterval,
+    alt: (index) => `RMSNorm animation frame ${index + 1}`,
+  },
   chunking: {
     frames: ["chunking-anim/chunking.png", ...Array.from({ length: 15 }, (_, index) => `chunking-anim/chunking-${index + 2}.png`)],
     interval: animationFrameInterval,
@@ -37,6 +47,16 @@ const slideshows = {
     frames: ["buffering-anim/buffering-mxm.png", ...Array.from({ length: 4 }, (_, index) => `buffering-anim/buffering-mxm-${index + 2}.png`)],
     interval: animationFrameInterval,
     alt: (index) => `MXM double buffering animation frame ${index + 1}`,
+  },
+  softmax: {
+    frames: ["softmax-anim/softmax.png", ...Array.from({ length: 26 }, (_, index) => `softmax-anim/softmax-${index + 2}.png`)],
+    interval: animationFrameInterval,
+    alt: (index) => `Softmax animation frame ${index + 1}`,
+  },
+  rope: {
+    frames: ["rope-anim/rope.png", ...Array.from({ length: 18 }, (_, index) => `rope-anim/rope-${index + 2}.png`)],
+    interval: animationFrameInterval,
+    alt: (index) => `RoPE animation frame ${index + 1}`,
   },
 };
 
@@ -129,12 +149,31 @@ function setupSlideshow(root) {
     const prompt = document.createElement("span");
     prompt.className = "magnifier-prompt";
     prompt.textContent = "Click the animation to choose an area";
-    lens.append(lensImage, prompt);
+    const moveLabel = document.createElement("span");
+    moveLabel.className = "magnifier-move-label";
+    moveLabel.textContent = "Drag to move";
+    lens.append(lensImage, prompt, moveLabel);
     stage.append(lens);
 
-    const state = { enabled: false, point: null };
-    const zoom = 1.75;
+    const state = { enabled: false, point: null, panelPosition: null };
+    const zoomLevel = () => window.matchMedia("(max-width: 700px)").matches ? 2 : 1.75;
     const defaultStageLabel = stage.getAttribute("aria-label");
+    let drag = null;
+
+    function positionPanel() {
+      if (!state.panelPosition) {
+        lens.style.removeProperty("top");
+        lens.style.removeProperty("left");
+        lens.style.removeProperty("bottom");
+        return;
+      }
+      const stageRect = stage.getBoundingClientRect();
+      const maxLeft = Math.max(0, stageRect.width - lens.offsetWidth);
+      const maxTop = Math.max(0, stageRect.height - lens.offsetHeight);
+      lens.style.left = `${state.panelPosition.x * maxLeft}px`;
+      lens.style.top = `${state.panelPosition.y * maxTop}px`;
+      lens.style.bottom = "auto";
+    }
 
     function showAt(normalizedX, normalizedY) {
       const imageRect = image.getBoundingClientRect();
@@ -146,6 +185,7 @@ function setupSlideshow(root) {
       const y = selectedY * imageRect.height;
       const lensWidth = lens.offsetWidth;
       const lensHeight = lens.offsetHeight;
+      const zoom = zoomLevel();
 
       lensImage.style.width = `${imageRect.width * zoom}px`;
       lensImage.style.height = `${imageRect.height * zoom}px`;
@@ -171,6 +211,7 @@ function setupSlideshow(root) {
       stage.setAttribute("aria-label", enabled ? "Select an area to magnify" : defaultStageLabel);
       if (enabled) {
         lens.classList.add("is-visible");
+        positionPanel();
         if (state.point) showAt(state.point.x, state.point.y);
         else lens.classList.add("is-awaiting-selection");
       } else {
@@ -184,8 +225,66 @@ function setupSlideshow(root) {
       event.preventDefault();
       showFromPointer(event);
     });
+
+    lens.addEventListener("pointerdown", (event) => {
+      if (!state.enabled || (event.pointerType === "mouse" && event.button !== 0)) return;
+      event.preventDefault();
+      event.stopPropagation();
+      const stageRect = stage.getBoundingClientRect();
+      const lensRect = lens.getBoundingClientRect();
+      drag = {
+        pointerId: event.pointerId,
+        startX: event.clientX,
+        startY: event.clientY,
+        startLeft: lensRect.left - stageRect.left,
+        startTop: lensRect.top - stageRect.top,
+      };
+      lens.style.left = `${drag.startLeft}px`;
+      lens.style.top = `${drag.startTop}px`;
+      lens.style.bottom = "auto";
+      lens.classList.add("is-dragging");
+      lens.setPointerCapture(event.pointerId);
+    });
+
+    lens.addEventListener("pointermove", (event) => {
+      if (!drag || event.pointerId !== drag.pointerId) return;
+      event.preventDefault();
+      event.stopPropagation();
+      const stageRect = stage.getBoundingClientRect();
+      const maxLeft = Math.max(0, stageRect.width - lens.offsetWidth);
+      const maxTop = Math.max(0, stageRect.height - lens.offsetHeight);
+      const left = Math.min(maxLeft, Math.max(0, drag.startLeft + event.clientX - drag.startX));
+      const top = Math.min(maxTop, Math.max(0, drag.startTop + event.clientY - drag.startY));
+      lens.style.left = `${left}px`;
+      lens.style.top = `${top}px`;
+      state.panelPosition = {
+        x: maxLeft ? left / maxLeft : 0,
+        y: maxTop ? top / maxTop : 0,
+      };
+    });
+
+    function endDrag(event) {
+      if (!drag || event.pointerId !== drag.pointerId) return;
+      event.preventDefault();
+      event.stopPropagation();
+      drag = null;
+      lens.classList.remove("is-dragging");
+    }
+
+    lens.addEventListener("pointerup", endDrag);
+    lens.addEventListener("pointercancel", endDrag);
+    lens.addEventListener("lostpointercapture", endDrag);
+    lens.addEventListener("click", (event) => {
+      if (!state.enabled) return;
+      event.preventDefault();
+      event.stopPropagation();
+    });
     window.addEventListener("resize", () => {
-      if (state.enabled && state.point) showAt(state.point.x, state.point.y);
+      if (!state.enabled) return;
+      requestAnimationFrame(() => {
+        positionPanel();
+        if (state.point) showAt(state.point.x, state.point.y);
+      });
     });
 
     return {
