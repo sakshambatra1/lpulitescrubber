@@ -548,7 +548,19 @@ figcaption {
 }
 
 .hero-repo {
+  display: flex;
   margin-top: 12px;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.hero-date {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .repo-link {
@@ -889,6 +901,17 @@ article sub { line-height: 0; }
 .embedded-slideshow { width: min(100%, 760px); margin: 38px auto 50px; }
 .embedded-slideshow .slide-meta { width: 100%; }
 .embedded-slideshow .wide-stage, .embedded-slideshow .wide-stage img { max-height: 520px; }
+.embedded-slideshow .slide-stage.preserves-frame-scale {
+  position: relative;
+  overflow: visible;
+}
+.embedded-slideshow .slide-stage.preserves-frame-scale > img {
+  position: absolute;
+  max-width: none;
+  max-height: none;
+  flex: none;
+  object-fit: fill;
+}
 .square-stage { width: min(100%, 520px); height: min(72vw, 520px); max-height: 520px; }
 
 .slide-meta {

@@ -21,41 +21,51 @@ const slideshows = {
       ...Array.from({ length: 5 }, (_, index) => `LPU-Lite-assets/mxm_anim/mxm_anim-${index + 2}.png`),
     ],
     interval: animationFrameInterval,
+    baseDimensions: { width: 897, height: 897 },
     alt: (index) => `MXM animation frame ${index + 1}`,
   },
   "vxm-v2": {
     frames: ["vxm-v2-anim/vxm-v2.png", ...Array.from({ length: 3 }, (_, index) => `vxm-v2-anim/vxm-v2-${index + 2}.png`)],
     interval: animationFrameInterval,
+    baseDimensions: { width: 2058, height: 574 },
     alt: (index) => `VXM v2 pipeline animation frame ${index + 1}`,
   },
   "vxm-v2-full": {
-    frames: ["vxm-v2-full.png", ...Array.from({ length: 13 }, (_, index) => `vxm-v2-full-anim/vxm-v2-full-${index + 2}.png`)],
+    frames: Array.from({ length: 13 }, (_, index) => `vxm-v2-full-anim/vxm-v2-full-${index + 2}.png`),
     interval: animationFrameInterval,
-    alt: (index) => `Full VXM v2 animation frame ${index + 1}`,
+    baseDimensions: { width: 4681, height: 1005 },
+    alt: (index) => `Full VXM v2 animation frame ${index + 2}`,
   },
   rmsnorm: {
     frames: ["rmsnorm-anim/rmsnorm.png", ...Array.from({ length: 19 }, (_, index) => `rmsnorm-anim/rmsnorm-${index + 2}.png`)],
     interval: animationFrameInterval,
+    baseDimensions: { width: 1996, height: 1406 },
     alt: (index) => `RMSNorm animation frame ${index + 1}`,
-  },
-  chunking: {
-    frames: ["chunking-anim/chunking.png", ...Array.from({ length: 15 }, (_, index) => `chunking-anim/chunking-${index + 2}.png`)],
-    interval: animationFrameInterval,
-    alt: (index) => `RMSNorm chunking animation frame ${index + 1}`,
   },
   buffering: {
     frames: ["buffering-anim/buffering-mxm.png", ...Array.from({ length: 4 }, (_, index) => `buffering-anim/buffering-mxm-${index + 2}.png`)],
     interval: animationFrameInterval,
+    baseDimensions: { width: 897, height: 897 },
     alt: (index) => `MXM double buffering animation frame ${index + 1}`,
   },
   softmax: {
     frames: ["softmax-anim/softmax.png", ...Array.from({ length: 26 }, (_, index) => `softmax-anim/softmax-${index + 2}.png`)],
     interval: animationFrameInterval,
+    baseDimensions: { width: 4039, height: 2415 },
+    baseFrameAnchor: { x: 893, y: 173 },
+    frameAnchor: (index) => index === 0 ? { x: 893, y: 173 } : { x: 697, y: 170 },
+    frameDimensions: (index) => {
+      if (index === 0) return { width: 4039, height: 2415 };
+      if (index < 23) return { width: 3847, height: 2415 };
+      if (index < 26) return { width: 4868, height: 2415 };
+      return { width: 4869, height: 2415 };
+    },
     alt: (index) => `Softmax animation frame ${index + 1}`,
   },
   rope: {
     frames: ["rope-anim/rope.png", ...Array.from({ length: 18 }, (_, index) => `rope-anim/rope-${index + 2}.png`)],
     interval: animationFrameInterval,
+    baseDimensions: { width: 1537, height: 1227 },
     alt: (index) => `RoPE animation frame ${index + 1}`,
   },
 };
@@ -76,6 +86,49 @@ function setupSlideshow(root) {
   let index = 0;
   let timer = null;
   let queuedFrame = null;
+  const preservesFrameScale = root.classList.contains("embedded-slideshow");
+  let baseFrameDimensions = config.baseDimensions ?? null;
+  let frameScale = null;
+  let frameOriginLeft = 0;
+
+  function applyPreservedFrameScale() {
+    const frameDimensions = config.frameDimensions?.(index)
+      ?? (image.naturalWidth && image.naturalHeight
+        ? { width: image.naturalWidth, height: image.naturalHeight }
+        : null);
+    if (!preservesFrameScale || !frameDimensions) return;
+    if (!baseFrameDimensions) {
+      baseFrameDimensions = frameDimensions;
+    }
+
+    const stageStyles = getComputedStyle(stage);
+    const parsedMaxHeight = Number.parseFloat(stageStyles.maxHeight);
+    const availableHeight = Number.isFinite(parsedMaxHeight) ? parsedMaxHeight : window.innerHeight;
+    const availableWidth = stage.clientWidth || root.clientWidth;
+    frameScale = Math.min(
+      availableWidth / baseFrameDimensions.width,
+      availableHeight / baseFrameDimensions.height,
+    );
+
+    const baseWidth = baseFrameDimensions.width * frameScale;
+    const baseHeight = baseFrameDimensions.height * frameScale;
+    const baseFrameAnchor = config.baseFrameAnchor ?? { x: 0, y: 0 };
+    const frameAnchor = config.frameAnchor?.(index) ?? baseFrameAnchor;
+    frameOriginLeft = (availableWidth - baseWidth) / 2;
+    stage.style.height = `${baseHeight}px`;
+    stage.classList.add("preserves-frame-scale");
+    image.style.width = `${frameDimensions.width * frameScale}px`;
+    image.style.height = `${frameDimensions.height * frameScale}px`;
+    image.style.left = `${frameOriginLeft + (baseFrameAnchor.x - frameAnchor.x) * frameScale}px`;
+    image.style.top = `${(baseFrameAnchor.y - frameAnchor.y) * frameScale}px`;
+  }
+
+  function refreshPreservedFrameScale() {
+    if (!preservesFrameScale || !baseFrameDimensions) return;
+    applyPreservedFrameScale();
+  }
+
+  image.addEventListener("load", applyPreservedFrameScale);
 
   function normalizedIndex(nextIndex) {
     return (nextIndex + config.frames.length) % config.frames.length;
@@ -97,6 +150,7 @@ function setupSlideshow(root) {
   function render(nextIndex) {
     index = normalizedIndex(nextIndex);
     image.src = config.frames[index];
+    applyPreservedFrameScale();
     image.alt = config.alt(index);
     if (title && config.titles) title.textContent = config.titles[index];
     if (count) count.textContent = `${index + 1} / ${config.frames.length}`;
@@ -346,6 +400,8 @@ function setupSlideshow(root) {
 
   document.addEventListener("visibilitychange", () => { if (document.hidden) stop(); });
   render(0);
+  if (image.complete) requestAnimationFrame(applyPreservedFrameScale);
+  window.addEventListener("resize", () => requestAnimationFrame(refreshPreservedFrameScale));
 }
 
 document.querySelectorAll("[data-slideshow]").forEach(setupSlideshow);
