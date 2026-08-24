@@ -520,13 +520,22 @@ article .microgpt-demo .demo-disclaimer {
 
 .media-stage img { display: block; width: 100%; height: 100%; object-fit: contain; }
 
-.original-media { width: min(100%, 780px); }
+/* Controlled media sizing */
+.original-media { width: min(100%, 680px); }
 .original-media .media-stage { height: auto; min-height: 0; }
 .original-media .media-stage img {
   width: 100%;
   height: auto;
-  max-height: 620px;
+  max-height: 480px;
   object-fit: contain;
+}
+
+figcaption {
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  text-align: center;
 }
 
 .implementation-video video {
@@ -538,40 +547,45 @@ article .microgpt-demo .demo-disclaimer {
   background: #000;
 }
 
-.buses-original { width: 100%; }
-.buses-original .media-stage img { max-height: none; }
-
-.vxm-scale-detail {
-  width: min(100%, 520px);
-  margin: 28px 0 38px;
+.hero-repo {
+  margin-top: 12px;
 }
 
-.vxm-scale-viewport {
-  width: 100%;
-  aspect-ratio: 2.25;
-  overflow: hidden;
+.repo-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid var(--line);
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.18s ease;
 }
 
-.vxm-scale-viewport img {
-  display: block;
-  width: auto;
-  max-width: none;
-  height: 100%;
-  transform: translateX(-65%);
+.repo-link:hover {
+  background: #ffffff;
+  border-color: #a0a0a0;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-figcaption {
-  margin-top: 14px;
-  color: var(--muted);
-  font-size: 0.82rem;
-  line-height: 1.5;
-  text-align: center;
+.hardware-module-media { width: min(100%, 520px); }
+.transformer-softmax-media { width: min(100%, 540px); }
+#section-7 figure.attention-relationship-media {
+  width: min(100%, 680px);
+  max-width: 100%;
+  margin: 34px auto 42px;
+  transform: none;
 }
 
-/* Requested section-specific media scale. */
-#section-8 figure.original-media { width: min(50%, 390px); }
+#section-8 figure.original-media { width: min(100%, 440px); }
 #section-8 .comparison,
-#section-8 [data-slideshow="mxm"] { width: min(70%, 532px); }
+#section-8 [data-slideshow="mxm"] { width: min(100%, 560px); }
 #section-8 .comparison .square-stage {
   width: 100%;
   height: auto;
@@ -579,28 +593,36 @@ figcaption {
   aspect-ratio: 1;
 }
 
-#section-7 figure.attention-relationship-media {
-  width: min(125%, 975px);
-  max-width: none;
-  margin-left: 50%;
-  transform: translateX(-50%);
+.neuron-media { width: min(100%, 320px); }
+.neural-net-media, .nn-2d-media, .relu-media { width: min(100%, 480px); }
+.vxm-mux-media { width: min(100%, 280px); }
+.vxm-v1-media { width: min(100%, 460px); }
+.vxm-v2-lanes-media { width: min(100%, 640px); }
+.vxm-full-media { width: min(100%, 780px); }
+.rmsnorm-motiv-media { width: min(100%, 520px); }
+.attention-score-media { width: min(100%, 580px); }
+.rope-media { width: min(100%, 560px); }
+.rope-embedding-media { width: min(100%, 520px); }
+.rope-graph-media { width: min(100%, 560px); }
+.icu-secondary-media { width: min(100%, 760px); }
+.icu-isa-media { width: min(100%, 860px); }
+.mem-hierarchy-media { width: min(100%, 560px); }
+.numerics-media { width: min(100%, 840px); }
+
+.icu-isa-media .media-stage img,
+.numerics-media .media-stage img {
+  max-height: none;
 }
 
-.vxm-v1-media { width: min(50%, 390px); }
-.vxm-mux-media { width: min(40%, 312px); }
-
-.icu-secondary-media { width: min(80%, 624px); }
-
-.vxm-full-media {
-  width: min(112vw, 936px);
-  max-width: none;
-  margin-left: 50%;
-  transform: translateX(-50%);
+.footnote-separator {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 400;
+  vertical-align: super;
+  line-height: 0;
+  user-select: none;
+  margin-right: 0.05em;
 }
-
-.rope-media { width: min(100%, 760px); }
-.rope-embedding-media { width: min(100%, 540px); }
-.rope-graph-media { width: min(100%, 600px); }
 .rope-wide-formula { width: min(100%, 700px); }
 .rope-formula-media { width: min(100%, 560px); }
 .rope-angle-media { width: min(100%, 610px); }

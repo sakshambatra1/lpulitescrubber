@@ -16,7 +16,11 @@
 <body>
 <main>
   <section class="hero" aria-labelledby="page-title">
-    <header class="hero-copy"><h1 id="page-title">LPU Lite</h1><p>a lite language processing unit by Saksham Batra, Michael Trbovic, and Arjun Harinath.</p></header>
+    <header class="hero-copy">
+      <h1 id="page-title">LPU Lite</h1>
+      <p>a lite language processing unit by Saksham Batra, Michael Trbovic, and Arjun Harinath.</p>
+      <p class="hero-repo"><a href="https://github.com/frankenstein-v1/LPULite.git" target="_blank" rel="noreferrer" class="repo-link"><svg class="repo-icon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg><span>GitHub: frankenstein-v1/LPULite</span></a></p>
+    </header>
     <div class="slideshow main-slideshow" id="lpu-forward-pass-animation" data-slideshow="main">
       <button class="slide-stage wide-stage" type="button" data-action="next" aria-label="Next frame"><img src="main_animation/LPU-Anim.png" alt="LPU Lite forward-pass architecture, frame 1" draggable="false" /></button>
       <p class="animation-caption">this animation showcases a forward pass computing self attention on our reinvented LPU</p>
@@ -36,7 +40,7 @@
     <section id="section-1">
       <p class="section-label">01</p>
       <h2>What is an LPU?</h2>
-      <p>LPU stands for Language Processing Unit. It is a specialized computer chip developed by Groq<sup class="footnote-ref" id="footnote-ref-1"><a href="#footnote-1" aria-label="Footnote 1">1</a></sup> specifically for running large language models such as ChatGPT and Claude. Groq has kept the secret of their LPU closed-source and only left small hints in their research paper.<sup class="footnote-ref" id="footnote-ref-2"><a href="#footnote-2" aria-label="Footnote 2">2</a></sup><sup class="footnote-ref" id="footnote-ref-3"><a href="#footnote-3" aria-label="Footnote 3">3</a></sup> The LPU differs from a traditional chip in many ways, but the overarching idea is “deterministic execution.” Deterministic execution refers to the idea that the chip does exactly what it is told and nothing else, with predictable timing and repeatable behaviour. If an operation is executed multiple times, it should result in the same number of clock cycles<sup class="footnote-ref" id="footnote-ref-4"><a href="#footnote-4" aria-label="Footnote 4">4</a></sup> for each execution. Hardware is dumb. A chip does not think. It’s just a collection of microscopic physical switches (transistors) arranged to route signals. The philosophy behind the design of the LPU strips complex control logic off the chip and moves all the intelligence to a piece of software called the compiler.</p>
+      <p>LPU stands for Language Processing Unit. It is a specialized computer chip developed by Groq<sup class="footnote-ref" id="footnote-ref-1"><a href="#footnote-1" aria-label="Footnote 1">1</a></sup> specifically for running large language models such as ChatGPT and Claude. Groq has kept the secret of their LPU closed-source and only left small hints in their research paper.<sup class="footnote-ref" id="footnote-ref-2"><a href="#footnote-2" aria-label="Footnote 2">2</a></sup><sup class="footnote-separator">, </sup><sup class="footnote-ref" id="footnote-ref-3"><a href="#footnote-3" aria-label="Footnote 3">3</a></sup> The LPU differs from a traditional chip in many ways, but the overarching idea is “deterministic execution.” Deterministic execution refers to the idea that the chip does exactly what it is told and nothing else, with predictable timing and repeatable behaviour. If an operation is executed multiple times, it should result in the same number of clock cycles<sup class="footnote-ref" id="footnote-ref-4"><a href="#footnote-4" aria-label="Footnote 4">4</a></sup> for each execution. Hardware is dumb. A chip does not think. It’s just a collection of microscopic physical switches (transistors) arranged to route signals. The philosophy behind the design of the LPU strips complex control logic off the chip and moves all the intelligence to a piece of software called the compiler.</p>
     </section>
 
     <section id="section-2">
@@ -66,7 +70,7 @@
       <p class="section-label">05</p>
       <h2>Background on hardware</h2>
       <p>Prior to starting this project, we thought a project related to building hardware meant we had to deal with physical objects, such as an Arduino board, printed circuit boards, soldering, etc. It turns out that for digital logic, you have to describe the hardware using code similarly to how you’d design a printed circuit board with computer-aided design! For example, let’s say you are coding a module to add two 8-bit numbers together to get a 9-bit number; here is how you would imagine that in hardware.</p>
-      <figure class="media-block original-media"><div class="media-stage"><img src="draft1-originals/module-verilog.png" alt="Hardware module with two 8-bit inputs and one 9-bit output" loading="lazy" /></div></figure>
+      <figure class="media-block original-media hardware-module-media"><div class="media-stage"><img src="draft1-originals/module-verilog.png" alt="Hardware module with two 8-bit inputs and one 9-bit output" loading="lazy" /></div></figure>
       <p>In this example, we have two input wires that represent two 8-bit inputs, and an output wire representing a 9-bit output. The “module” in between those wires represents our actual logic of how those two numbers are added together.</p>
       <p>This logic in SystemVerilog can be represented as:</p>
       <pre class="code-block systemverilog"><code><span class="syntax-keyword">module</span> <span class="syntax-module">adder</span> <span class="syntax-punctuation">(</span>
@@ -84,6 +88,7 @@
       <p class="section-label">06</p>
       <h2>The Model We Targeted: MicroGPT</h2>
       <p>MicroGPT is a scaled-down Transformer that is trained on simple text, like names, to predict the next character in the sequence. Our focus was not on scale, but on validating the core concept. If we can prove why a module can run a certain arithmetic operation efficiently, we can scale it up given the tools we have today. However, the most important part remains proving why something works. By targeting MicroGPT, we got rid of any unnecessary parameters and isolated the most important idea of the entire project.</p>
+      <p>Below is an interactive demo to showcase how MicroGPT predicts the next character in a name. Click on 1 of the 4 letters to “generate” a name.</p>
       <div class="microgpt-demo" data-microgpt-demo>
         <div class="microgpt-demo-header"><div><p class="demo-eyebrow">Interactive MicroGPT example</p><h4>Predict the next character</h4></div><button class="demo-reset" type="button" data-microgpt-reset>Reset</button></div>
         <div class="generated-name" aria-live="polite"><span class="generated-label">Generated name</span><span class="generated-value"><span data-generated-name>Ya</span><span class="generated-cursor" aria-hidden="true"></span></span></div>
@@ -109,7 +114,7 @@
       <p>For Key, the word “Machines” may encode “I am a noun,” “I can be an agent,” “I often act.” So, K is like labels for each word. Therefore, Query searches through Keys to find answers.</p>
       <p>As for Value, this vector may encode the information you get when you choose this word; V decides how much context you take per word.</p>
       <p>These matrices are generated by multiplying the input (X) with Query weights, Key weights, and Value weights.</p>
-      <figure class="media-block original-media"><div class="media-stage"><img src="draft1-originals/softmax-attention-2.png" alt="Input multiplied by Query, Key, and Value weights" loading="lazy" /></div></figure>
+      <figure class="media-block original-media transformer-softmax-media"><div class="media-stage"><img src="draft1-originals/softmax-attention-2.png" alt="Input multiplied by Query, Key, and Value weights" loading="lazy" /></div></figure>
       <p>These weights are generated during training, which is a whole different part of machine learning; however, for now, we will only look at what happens during inference (using the model).</p>
       <p>Each input (“dog”, “bites”, “man”, all of these are independent inputs) has its own Q, K, V vectors.</p>
       <p>Once we have the Q, K, V vectors, we can then multiply \(Q @ K^{\mathsf T}\). Why a multiplication? If we look at the dot product and why it's done, the purpose is to understand how close two different vectors are. The purpose of Q is the question the word is asking.</p>
@@ -185,8 +190,8 @@
       <h2>Activation Functions and Neural Networks</h2>
       <p>Now that we have discussed the need for matrix multiplication and how it works in hardware, we should talk about the next most important thing in ML: neural networks!</p>
       <p>In an actual brain, neurons receive electrical signals from their surrounding neurons, and when it reaches a threshold, the signals are passed on to the next neuron. These “AI” neurons work in the same way; they take in data, perform calculations, and decide whether or not to pass that information onto the next layer.</p>
-      <figure class="media-block original-media"><div class="media-stage"><img src="draft1-originals/neuron.png" alt="A neuron" loading="lazy" /></div></figure>
-      <figure class="media-block original-media"><div class="media-stage"><img src="draft1-originals/neural-net.png" alt="A simple neural network" loading="lazy" /></div></figure>
+      <figure class="media-block original-media neuron-media"><div class="media-stage"><img src="draft1-originals/neuron.png" alt="A neuron" loading="lazy" /></div></figure>
+      <figure class="media-block original-media neural-net-media"><div class="media-stage"><img src="draft1-originals/neural-net.png" alt="A simple neural network" loading="lazy" /></div></figure>
       <p>Above is an image of a simple neural network. In every line of the network, the formula y = mx+b is used. As we move down the network, we keep stringing that same formula together to end up with a straight line at the end of the network.</p>
       <p>When data enters a neuron, there are three components that are calculated. “x” is the input data, “m” is the weight (which is how much importance the input has), and “b” is the bias, which is the shifting of the line up or down. These neurons are stacked on top of each other to create a network.</p>
       <p>Let’s walk through an example:</p>
@@ -202,19 +207,19 @@
       </div>
       <p>Y = 4x+7 is still a linear equation. You could stack an infinite number of neurons on top of one another, but the output will always stay linear. This becomes a major issue as some data just can't be classified with a straight line.</p>
       <p>Let’s take a look at this graph to understand how it really works. You want to classify two fruits, lemons and tomatoes, on two different features, redness and tanginess.</p>
-      <figure class="media-block original-media"><div class="media-stage"><img src="draft1-originals/2d-nn.png" alt="Lemons and tomatoes separated by a linear boundary" loading="lazy" /></div></figure>
+      <figure class="media-block original-media nn-2d-media"><div class="media-stage"><img src="draft1-originals/2d-nn.png" alt="Lemons and tomatoes separated by a linear boundary" loading="lazy" /></div></figure>
       <p>The data on the graph forms groups. The tomatoes are red but not as tangy, so they group up at the bottom right corner, while lemons are not red and very tangy, so they group up on the top left. The line in between the two groups is the neuron. It uses y = mx + b to create a boundary, so everything on one side is a part of the tomato group, and everything on the other side is a part of the lemon group.</p>
       <p>Now imagine a trickier scenario where we want to classify oranges and lemons. Oranges are quite tangy, but they sit closer to redness than lemons do. The visualization of this data places some orange data points trapped directly inside a surrounding cluster of lemons.</p>
-      <figure class="media-block original-media"><div class="media-stage"><img src="article-assets/relu-linear.png" alt="Orange data points surrounded by lemons" loading="lazy" /></div></figure>
+      <figure class="media-block original-media relu-media"><div class="media-stage"><img src="article-assets/relu-linear.png" alt="Orange data points surrounded by lemons" loading="lazy" /></div></figure>
       <p>This is what non-linear data is. Imagine trying to draw a line to split all the lemons and oranges in 1 go with no overlaps on either side; you can’t. No matter how you orient that line, you can't split them without either going through the oranges in the middle or splitting them unequally.</p>
-      <figure class="media-block original-media"><div class="media-stage"><img src="article-assets/relu-linear-line.png" alt="A straight line cannot separate the oranges and lemons" loading="lazy" /></div></figure>
+      <figure class="media-block original-media relu-media"><div class="media-stage"><img src="article-assets/relu-linear-line.png" alt="A straight line cannot separate the oranges and lemons" loading="lazy" /></div></figure>
       <p>As we saw earlier, simply stacking more linear layers together just collapses back into another straight line. To solve this issue, we don’t throw away y = mx+b. Instead, we actually blend the output of each neuron with a non-linear function known as an activation function. The simplest and most popular of these activation functions is known as ReLU (Rectified Linear Unit).</p>
       <p>ReLU is a concept that runs on a very simple premise:</p>
       <p>If a number is negative, set the output to 0.</p>
       <p>If the number is positive, let it pass through.</p>
       <p>By following these rules, ReLU breaks the linearity. ReLU will take that line of yours and start to bend it. By combining these bent lines together, we start to create a boundary around the lemons to group them together, leaving the oranges in the center untouched.</p>
-      <figure class="media-block original-media"><div class="media-stage"><img src="article-assets/relu-boundary.png" alt="ReLU creates a non-linear boundary around the lemons" loading="lazy" /></div></figure>
-      <p>After adding ReLU to our graph, we can now see that there is 1 closed loop line that creates a full boundary around the lemons and oranges.<sup class="footnote-ref" id="footnote-ref-10"><a href="#footnote-10" aria-label="Footnote 10">10</a></sup><sup class="footnote-ref" id="footnote-ref-11"><a href="#footnote-11" aria-label="Footnote 11">11</a></sup></p>
+      <figure class="media-block original-media relu-media"><div class="media-stage"><img src="article-assets/relu-boundary.png" alt="ReLU creates a non-linear boundary around the lemons" loading="lazy" /></div></figure>
+      <p>After adding ReLU to our graph, we can now see that there is 1 closed loop line that creates a full boundary around the lemons and oranges.<sup class="footnote-ref" id="footnote-ref-10"><a href="#footnote-10" aria-label="Footnote 10">10</a></sup><sup class="footnote-separator">, </sup><sup class="footnote-ref" id="footnote-ref-11"><a href="#footnote-11" aria-label="Footnote 11">11</a></sup></p>
       <p>There are also other activation functions such as Sigmoid and GeLU / SiLU / SwiGLU<sup class="footnote-ref" id="footnote-ref-12"><a href="#footnote-12" aria-label="Footnote 12">12</a></sup>; however, ReLU provides the perfect balance between simplicity and effectiveness, so we decided on using that.</p>
       <p>Now that we have a background on neural networks and activation functions, we can dive into how we represent this in hardware with our VXM.</p>
     </section>
@@ -228,7 +233,7 @@
       <ol class="draft-list"><li>Bias Add (addition)</li><li>Scale (multiplication)</li><li>ReLU</li></ol>
       <p>With these 3 operations, we wanted to make formula creation (stringing operations together) easy for the compiler, so we decided that adding a selection of which operation you want at a time would be best. To do that, we needed to use a hardware block called a multiplexer (MUX).</p>
       <p>A MUX is super useful and can almost be visualized as a train-track selector: if I flip a switch to the left, it should choose the left lane; if I move the switch to the middle, it should pick the middle lane, and so on. Instead of a switch, they work on control bits. If I pass a zero into the control line, lane 0 is my output; if I pass 1, lane 1 is my output. This can be scaled to as many lanes as you need, but for our purposes we would require a 3-to-1 MUX, where the control bit is now 2 bits wide instead of 1 bit.</p>
-      <figure class="media-block original-media vxm-v1-media vxm-mux-media"><div class="media-stage"><img src="draft1-originals/3-1-mux.png" alt="3-to-1 multiplexer" loading="lazy" /></div></figure>
+      <figure class="media-block original-media vxm-mux-media"><div class="media-stage"><img src="draft1-originals/3-1-mux.png" alt="3-to-1 multiplexer" loading="lazy" /></div></figure>
       <p>When the compiler sends its instructions, 2 of those bits are used to control our 3-to-1 MUX inside our VXM and choose which of our 3 operations to output. Thus making our first version of the VXM:</p>
       <figure class="media-block original-media vxm-v1-media"><div class="media-stage"><img src="draft1-originals/vxmv1.png" alt="VXM v1" loading="lazy" /></div></figure>
       <p>However, this design didn’t come without flaws; its main flaw was that data would have to completely exit the VXM before coming back and hitting another operation. On a bigger scale with more operations, this would become a major traffic issue.</p>
@@ -251,12 +256,11 @@
       <p>So while an element is in ReLU, the next queued-up element can enter a bias addition. This creates overlap between operations! As the animation above shows, instead of forcing element \(a_{01}\) to wait until \(a_{00}\) finishes both bias addition and ReLU, we decouple the two stages. While a00 is in ReLU, a01 can start Bias addition. This concept is known as throughput, and with our pipeline we have increased throughput as more operations are starting at an arbitrary point in time compared to v1!</p>
       <p>Now sometimes we may not need to do certain operations. For example, when the result of \(Q @ K^{\mathsf T}\) needs to get scaled by \(\sqrt{d_k}\), we don’t need that value to go through bias add or ReLU.</p>
       <p>That is when we decided to add a MUX between each stage! By adding a MUX, we can include the wire before it goes through an operation, allowing us to bypass it based on the select bits sent via the compiler. This is when we truly started to understand how much power the compiler truly holds for the LPU.</p>
-      <figure class="media-block original-media"><div class="media-stage"><img src="draft1-originals/vxmv2.png" alt="VXM v2" loading="lazy" /></div></figure>
+      <figure class="media-block original-media vxm-v2-lanes-media"><div class="media-stage"><img src="draft1-originals/vxmv2.png" alt="VXM v2" loading="lazy" /></div></figure>
       <p>To address the flaw of operating on multiple elements at a time, we expanded the VXM to hold multiple lanes. For example, let's say we have a row [a00, a01]; as of yet, we can only do computations on one element at a time. We wanted to parallelize this process by being able to execute an operation on each row at a time. That is when we introduced multiple lanes!</p>
-      <figure class="media-block original-media"><div class="media-stage"><img src="draft1-originals/vxmv2_lanes.png" alt="Parallel VXM v2 lanes" loading="lazy" /></div><figcaption>The number of rows is changeable on our actual hardware; we used 8 lanes; however, the picture depicts 2 lanes for simplicity purposes</figcaption></figure>
+      <figure class="media-block original-media vxm-v2-lanes-media"><div class="media-stage"><img src="draft1-originals/vxmv2_lanes.png" alt="Parallel VXM v2 lanes" loading="lazy" /></div><figcaption>The number of rows is changeable on our actual hardware; we used 8 lanes; however, the picture depicts 2 lanes for simplicity purposes</figcaption></figure>
       <p>After all of the elementwise operations (bias add, ReLU, Scale) are completed, we collect them into a row to proceed with the vector operations.</p>
       <p>Now it's time to implement vector-wise operations, including Softmax, RoPE, RMSNorm, and Vector Add<sup class="footnote-ref" id="footnote-ref-13"><a href="#footnote-13" aria-label="Footnote 13">13</a></sup>.</p>
-      <figure class="media-block original-media vxm-full-media"><div class="media-stage"><img src="draft1-originals/vxm-v2-full.png" alt="Full VXM v2" loading="lazy" /></div></figure>
       <div class="slideshow embedded-slideshow" data-slideshow="vxm-v2-full">
         <button class="slide-stage wide-stage" type="button" data-action="next" aria-label="Next full VXM v2 frame"><img src="vxm-v2-full.png" alt="Full VXM v2 animation frame 1" loading="lazy" draggable="false" /></button>
         <div class="slide-meta"><span>Full VXM v2</span><span data-count>1 / 14</span></div>
@@ -276,25 +280,25 @@
     <section id="section-12">
       <p class="section-label">12</p>
       <h2>Look Up Tables</h2>
-      <p>Implementing arithmetic such as multiplication and addition on hardware thus far was really straightforward; however, our first real bottlenecks when it came to pure arithmetic appeared during the implementation of softmax, where we had to implement division and exponentiation (as seen in the formula).</p>
+      <p>Implementing arithmetic such as multiplication and addition on hardware thus far was really straightforward; however, our first real bottlenecks when it came to pure arithmetic appeared during the implementation of softmax, where we had to implement division and exponentiation <a class="inline-jump" href="#softmax-formula">(as seen in the formula)</a>.</p>
       <p>Implementing division and exponentiation led us to many stalls, as together they took over hundreds of cycles to finish computing. Multipliers and adders are relatively easy to build out of logic gates, making them cheaper operations, but one 8-bit division module requires roughly 200 to 1,500 logic gates! All of those gates add computation time; repeat that operation over and over, and our LPU would take minutes for just a single token output.</p>
       <p>But what if the hardware knew the answers to division/exp questions as they were asked? That is when we learned about Look Up Tables. A Look Up Table (LUT) is a table that stores pre-calculated output values for a set of inputs. Instead of performing a calculation every time, the system simply looks up the corresponding value in the table, which is much faster. This also has an added feature to approximate the result of an operation. Now the term “approximation” seems very scary for hardware, or at least it did to us before we dove deep into it, but look at it like this:</p>
-      <p>Let's look at the example \(10 / 3.107\)</p>
+      <p>Let's look at the example \(\frac{10}{3.107}\)</p>
       <p>Division can also be interpreted as multiplying the reciprocal</p>
-      <p>Therefore, \(10 \times 1 / 3.107\)</p>
-      <p>This circles back to the idea of arithmetic in hardware; multiplication and addition are cheap. Now technically \(1 / 3.107\) involves division, but that is where LUTs come in!</p>
+      <p>Therefore, \(10 \times \frac{1}{3.107}\)</p>
+      <p>This circles back to the idea of arithmetic in hardware; multiplication and addition are cheap. Now technically \(\frac{1}{3.107}\) involves division, but that is where LUTs come in!</p>
       <p>We store a bunch of reciprocal values into memory such as:</p>
-      <div class="table-wrap"><table class="lut-table"><thead><tr><th>Divisor \(x\)</th><th>Stored \(1/x\)</th></tr></thead><tbody><tr><td>\(3.08\)</td><td>\(0.32468\)</td></tr><tr><td>\(3.09\)</td><td>\(0.32368\)</td></tr><tr><td>\(3.10\)</td><td>\(0.32258\)</td></tr><tr><td>\(3.11\)</td><td>\(0.32154\)</td></tr></tbody></table></div>
-      <p>Now let's say we have to do \(10 / 3.107\).</p>
+      <div class="table-wrap"><table class="lut-table"><thead><tr><th>Divisor \(x\)</th><th>Stored \(\frac{1}{x}\)</th></tr></thead><tbody><tr><td>\(3.08\)</td><td>\(0.32468\)</td></tr><tr><td>\(3.09\)</td><td>\(0.32368\)</td></tr><tr><td>\(3.10\)</td><td>\(0.32258\)</td></tr><tr><td>\(3.11\)</td><td>\(0.32154\)</td></tr></tbody></table></div>
+      <p>Now let's say we have to do \(\frac{10}{3.107}\).</p>
       <p>In reality, the answer to that is \(3.21854\)</p>
-      <p>In hardware using LUTs, if we do \(10 \times 1 / 3.107\), we look at the closest value to \(3.107\), which comes out to \(3.11\)</p>
-      <p>The hardware now “looks up” in the table to see what the value of \(1 / 3.11\) is, which comes out to \(0.32154\)</p>
+      <p>In hardware using LUTs, if we do \(10 \times \frac{1}{3.107}\), we look at the closest value to \(3.107\), which comes out to \(3.11\)</p>
+      <p>The hardware now “looks up” in the table to see what the value of \(\frac{1}{3.11}\) is, which comes out to \(0.32154\)</p>
       <p>Now we do the final arithmetic \(10 \times 0.32154\), and get \(3.2154\)</p>
       <p>Now, if we compare the values</p>
       <div class="equation-stack lut-comparison"><div class="equation">\[\text{Actual value}=3.21854\]</div><div class="equation">\[\text{Approximated Value}=3.2154\]</div><div class="equation">\[\text{Error}=0.10\%\]</div></div>
       <p>Even though we approximated the value of this division, we got really close to the expected value. We essentially turn the division arithmetic into multiplication. The tradeoff in this comes out to be that there is a small error when comparing the actual value and approximated value.</p>
       <p>The error value is hard to be zero; however, it can be as close to zero with design decisions. For example, if you see the divisor column in the LUT above, it is spaced out very lightly, incrementing over \(0.01\) every entry. However, if we make it less spaced out with something like:</p>
-      <div class="table-wrap"><table class="lut-table"><thead><tr><th>Divisor \(x\)</th><th>Stored \(1/x\)</th></tr></thead><tbody><tr><td>\(2.75\)</td><td>\(0.3636\)</td></tr><tr><td>\(3.00\)</td><td>\(0.3333\)</td></tr><tr><td>\(3.25\)</td><td>\(0.3077\)</td></tr><tr><td>\(3.50\)</td><td>\(0.2857\)</td></tr></tbody></table></div>
+      <div class="table-wrap"><table class="lut-table"><thead><tr><th>Divisor \(x\)</th><th>Stored \(\frac{1}{x}\)</th></tr></thead><tbody><tr><td>\(2.75\)</td><td>\(0.3636\)</td></tr><tr><td>\(3.00\)</td><td>\(0.3333\)</td></tr><tr><td>\(3.25\)</td><td>\(0.3077\)</td></tr><tr><td>\(3.50\)</td><td>\(0.2857\)</td></tr></tbody></table></div>
       <p>Now the divisor increments by \(0.25\); the closest value to \(3.107\) is \(3.00\), and in that case \(10 \times 0.3333 = 3.333\)</p>
       <p>Which comes out to an error of \(3.33\%\)</p>
       <p>An LUT with divisor values in very small increments is more accurate, but takes more space in memory; however, an LUT with larger increments is less accurate, but takes up less space in memory.</p>
@@ -328,9 +332,9 @@
       <p>Throughout this article, there's been a lot of complex math mentioned (and more to be mentioned); this chaotic nature of transformers can cause values to either shrink to zero or grow too large for the model to handle. To mitigate this phenomenon, normalization is used. Normalization is like an automatic volume controller, it makes all the audio comfortable to listen to whether it’s a whisper that gets louder making it easier to hear, or an explosion that gets softer. Traditionally, LayerNorm is used, but RMSNorm provides a simpler formula with a similar effectiveness, so we went ahead with it. The RMSNorm formula can be represented as:</p>
       <div class="equation">\[\operatorname{RMSNorm}(x_i)=\frac{x_i}{\sqrt{\frac{1}{d}\sum_{j=1}^{d}x_j^2+\varepsilon}}\]</div>
       <p>Our initial bottleneck came with the complexity of the formula, as it includes</p>
-      <ol class="draft-list"><li>The addition of \(\varepsilon\)</li><li>Square root</li><li>Division (\(1/d\))</li><li>Finding the reciprocal (later in the calculations)</li></ol>
+      <ol class="draft-list"><li>The addition of \(\varepsilon\)</li><li>Square root</li><li>Division (\(\frac{1}{d}\))</li><li>Finding the reciprocal (later in the calculations)</li></ol>
       <p>Which are all arithmetic operations that in hardware are generally tricky to do. That is when we applied the trick we learned earlier: Look-Up Tables!</p>
-      <p>Now the first problem is very easy to deal with: we simply can just remove \(\varepsilon\)! The reason why we can remove this value is that it was used as a failsafe to prevent a division by zero. Now that seems important, but as discussed before, to solve the division issues we can just use an LUT and have a lookup value that, when we see \(1/0\), we set it equal to a value as if it were \(1/0.001\).</p>
+      <p>Now the first problem is very easy to deal with: we simply can just remove \(\varepsilon\)! The reason why we can remove this value is that it was used as a failsafe to prevent a division by zero. Now that seems important, but as discussed before, to solve the division issues we can just use an LUT and have a lookup value that, when we see \(\frac{1}{0}\), we set it equal to a value as if it were \(\frac{1}{0.001}\).</p>
       <p>Before we thought about LUTs, we observed how a simple 4 row of RMSNorm is computed to notice any patterns.</p>
       <div class="number-conversion-example rmsnorm-calculation-example">
         <div class="equation equation-stack">
@@ -340,27 +344,27 @@
           \[\operatorname{RMSNorm}(x)=\frac{x}{2.7386}\approx\begin{bmatrix}0.3651&amp;0.7303&amp;1.0954&amp;1.4606\end{bmatrix}\]
         </div>
       </div>
-      <p>Seeing this calculation was very important! As we noticed, we reciprocate \(\sqrt{x}\). Therefore, instead of using an LUT for first calculating the square root, and then the reciprocal. We combined them into one, where we looked up the value of \(1/\sqrt{x}\).</p>
-      <p>As for division, we initially thought we would need an LUT for division as well for computing \(1/d \times \sum(x^2)\). But then we realized any divisor which is a power of 2 can simply be right shifted to perform division!</p>
+      <p>Seeing this calculation was very important! As we noticed, we reciprocate \(\sqrt{x}\). Therefore, instead of using an LUT for first calculating the square root, and then the reciprocal. We combined them into one, where we looked up the value of \(\frac{1}{\sqrt{x}}\).</p>
+      <p>As for division, we initially thought we would need an LUT for division as well for computing \(\frac{1}{d} \times \sum(x^2)\). But then we realized any divisor which is a power of 2 can simply be right shifted to perform division!</p>
       <p>Now right shifting bits is a very powerful operation in hardware, and it can be used to replace division!</p>
       <p>Let's look at how bit shifting works in our RMSNorm:</p>
-      <p>Let's start with our reciprocal \(1/d\). In RMSNorm, d is equal to the number of features in your model. In our case, since we are using MicroGPT, our feature size is 16, so \(d = 16\).</p>
+      <p>Let's start with our reciprocal \(\frac{1}{d}\). In RMSNorm, d is equal to the number of features in your model. In our case, since we are using MicroGPT, our feature size is 16, so \(d = 16\).</p>
       <p>Now binary works on a power-of-2 system. Take this 8-bit binary number for example.</p>
       <div class="equation bitshift-equation">\[\begin{array}{c|cccccccc}\text{bit position}&amp;7&amp;6&amp;5&amp;4&amp;3&amp;2&amp;1&amp;0\\\hline\text{place value}&amp;2^7&amp;2^6&amp;2^5&amp;2^4&amp;2^3&amp;2^2&amp;2^1&amp;2^0\\\text{decimal value}&amp;128&amp;64&amp;32&amp;16&amp;8&amp;4&amp;2&amp;1\\\text{example bits}&amp;0&amp;1&amp;0&amp;1&amp;1&amp;0&amp;1&amp;0\end{array}\]</div>
       <p>The first bit (the bit on the far right) is in position 0, so we raise 2 to the power of 0. For the second bit, it is in position 1, so we raise 2 to the power of 1, and so on.</p>
-      <p>But remember how our d value was equal to 16; 16 is just the same as \(2^4\). The general rule for right shifting is that any division by a power of two (\(2^k\)) is equivalent to a right bit-shift by k. Meaning that since our \(k = 4\) to divide by \(1/16\), it is the same as right shifting by 4 bits.</p>
+      <p>But remember how our d value was equal to 16; 16 is just the same as \(2^4\). The general rule for right shifting is that any division by a power of two (\(2^k\)) is equivalent to a right bit-shift by k. Meaning that since our \(k = 4\) to divide by \(16\) (multiplying by \(\frac{1}{16}\)), it is the same as right shifting by 4 bits.</p>
       <p>To complete the division, we will then take our binary number and physically shift the bits. Here is an example.</p>
       <p>Take this binary number, which equals 80.</p>
       <div class="equation bitshift-equation">\[(01010000)_2=64+16=80\]</div>
-      <p>Then apply a right shift of 4 bits (80/16)</p>
+      <p>Then apply a right shift of 4 bits (\(\frac{80}{16}\))</p>
       <div class="equation bitshift-equation">\[\underbrace{01010000}_{80}\;\mathbin{\gg}\;4=\underbrace{00000101}_{5}\]</div>
-      <p>The resulting value is a binary number which is equal to 5! (80/16 = 5)</p>
+      <p>The resulting value is a binary number which is equal to 5! (\(\frac{80}{16} = 5\))</p>
       <p>Now the problem arises when the number is not a power of 2, such as 6. That is when you would need an LUT. However, for the model we executed, the trick remains true and saves us lots of memory bandwidth!</p>
       <p>This is the first time we battled with the tradeoffs of LUTs; at first, creating 3 different LUTs would be the easy thing to do. The tradeoff being that LUTs occupy memory, and if you want an LUT with a small error% (as shown <a class="inline-jump" href="#section-12">here</a>), the amount of memory needed could be very large.</p>
       <p>In this instance, we got creative and only used 1 LUT and had some leeway to make it with a small error%.</p>
       <p>After the implementation of LUTs, we ran into another bottleneck. We noticed that there is a summation across the entire row. For example, if we had a row of 16 elements, all 16 of these elements must be accumulated before the operation can continue. Working with our 8-lane VXM, we thought of a different approach: what if we process the first 8 elements, and store their partial sum? Then, when the next 8 elements arrive, what if we just accumulate those with the values we already have? This would progressively build the final row’s sum rather than have us expand to 16 lanes.</p>
-      <figure class="media-block original-media"><div class="media-stage"><img src="article-assets/rmsnorm-motiv.png" alt="RMSNorm chunking motivation" loading="lazy" /></div></figure>
-      <p>After those 16 elements have been processed, we can then move to the next stage and square them, followed by multiplying by 1/d, and then square rooting them.</p>
+      <figure class="media-block original-media rmsnorm-motiv-media"><div class="media-stage"><img src="article-assets/rmsnorm-motiv.png" alt="RMSNorm chunking motivation" loading="lazy" /></div></figure>
+      <p>After those 16 elements have been processed, we can then move to the next stage and square them, followed by multiplying by \(\frac{1}{d}\), and then square rooting them.</p>
       <p>This idea is known as chunking!</p>
       <p>In this animation, you can observe how we used Chunking, and LUTs to compute RMSNorm in hardware.</p>
       <div class="slideshow embedded-slideshow" data-slideshow="rmsnorm">
@@ -402,7 +406,7 @@
       <p>We can infer from these results that, for the word "thinking" in this sentence, approximately 80% of the information comes from the word "thinking" itself and 20% comes from the word "machines." In other words, when the model looks at “thinking,” it also pays attention to “machines,” helping it understand that the sentence is discussing machines that think.</p>
       <figure class="media-block original-media attention-score-media"><div class="media-stage"><img src="draft1-originals/attention-scores.png" alt="Query and transposed Key vectors produce attention scores" loading="lazy" /></div></figure>
       <p>Softmax is represented by this formula:</p>
-      <div class="equation">\[\operatorname{Softmax}(z_i)=\frac{e^{z_i}}{\sum_{j=1}^{K}e^{z_j}}\]</div>
+      <div class="equation" id="softmax-formula">\[\operatorname{Softmax}(z_i)=\frac{e^{z_i}}{\sum_{j=1}^{K}e^{z_j}}\]</div>
       <p>Our friend Surya had actually already implemented softmax in hardware before<sup class="footnote-ref" id="footnote-ref-14"><a href="#footnote-14" aria-label="Footnote 14">14</a></sup>. It included a divider module, exponential module, and the means to chain them all together, so we just ported this module into our own VXM. When we eventually tested the functionality, we noticed that this softmax gave correct answers but took around 300 clock cycles to complete.</p>
       <p>Therefore, in order to compute the division and exp arithmetic here, we anticipated that we had to use both LUTs and chunking.</p>
       <p>Previously in RMSNorm, we omitted the division LUT due to the bit shift trick; we looked to do something similar in softmax, but were unable to find any workarounds. Within the denominator, you sum a bunch of exponentiated numbers. As we recall, the bit shift trick only works if the denominator is within a power of 2.</p>
@@ -441,7 +445,7 @@
         </ol>
       </div>
       <p>We implemented three separate LUTs directly in the hardware:</p>
-      <ol class="draft-list"><li>The frequency for the angle calculation (\(1000^{-2/d_{\text{model}}}\))</li><li>Sine calculations</li><li>Cosine calculations</li></ol>
+      <ol class="draft-list"><li>The frequency for the angle calculation (\(1000^{-\frac{2}{d_{\text{model}}}}\))</li><li>Sine calculations</li><li>Cosine calculations</li></ol>
       <p>Unlike previous modules such as RMSNorm and Softmax, we did not need multiple passes of chunking here. For the previous computations, we had multiple passes as they required data for an entire row at a time to provide precise results, whereas in RoPE computations are performed in pairs. Each pair is independent and has different numbers. The process of RoPE being computed on our LPU can be visualized with the following animation.</p>
       <div class="slideshow embedded-slideshow" data-slideshow="rope">
         <button class="slide-stage wide-stage" type="button" data-action="next" aria-label="Next RoPE frame"><img src="rope-anim/rope.png" alt="RoPE animation frame 1" loading="lazy" draggable="false" /></button>
@@ -460,7 +464,7 @@
       <h2>Putting the math together</h2>
       <p>Now that we have all our mathematical blocks ready, we can have a look at the self-attention formula one last time:</p>
       <div class="equation">\[\operatorname{Attention}(Q,K,V)=\operatorname{softmax}\!\left(\frac{QK^{\mathsf T}}{\sqrt{d_k}}\right)V\]</div>
-      <p>So far we have learned everything up until \(Q@K^{\mathsf T}\) and softmax; however, the only things that remain are \(1/\sqrt{d_k}\) and \(@V\).</p>
+      <p>So far we have learned everything up until \(Q@K^{\mathsf T}\) and softmax; however, the only things that remain are \(\frac{1}{\sqrt{d_k}}\) and \(@V\).</p>
       <p>The division by \(\sqrt{d_k}\) is used to prevent the values of \(Q@K^{\mathsf T}\) from becoming too large for softmax.</p>
       <p>For example lets say we have a row [20, 30, 40, 50]. If we compute softmax over that row, we get [0, 0, 0.000045, 0.99995], whereas a row of [2, 3, 4, 5] may give us [0.03, 0.09, 0.24, 0.64]. The latter is much more feasible due to what follows next: multiplying with V.</p>
       <p>As we learned prior, the V vector is responsible for holding the actual contents for that specific word. So let's look back at our example of “thinking machines.”</p>
@@ -508,7 +512,7 @@
       <p class="section-label">20</p>
       <h2>Memory Hierarchy</h2>
       <p>The memory in an LPU is stored on the chip itself in something called SRAM, which is just a collection of buffers and registers. This is very different compared to the memory hierarchy of other AI accelerators.</p>
-      <figure class="media-block original-media"><div class="media-stage"><img src="draft1-originals/mem-hierarchy.png" alt="GPU memory hierarchy" loading="lazy" /></div></figure>
+      <figure class="media-block original-media mem-hierarchy-media"><div class="media-stage"><img src="draft1-originals/mem-hierarchy.png" alt="GPU memory hierarchy" loading="lazy" /></div></figure>
       <p>This former diagram is the memory hierarchy in a GPU<sup class="footnote-ref" id="footnote-ref-17"><a href="#footnote-17" aria-label="Footnote 17">17</a></sup>. We notice a relationship with the size of storage: the smaller the storage, the faster it is to retrieve an element; the larger the storage, the slower it is. Registers and Cache cost more per area on the chip, and the slower memory storage, RAM and SSD, are cheaper. When they are all used together, the cost is minimized, and performance is maximized.</p>
       <p>The LPU decided to completely go against memory hierarchies so it does not have to keep fetching data and instructions from DRAM or HBM<sup class="footnote-ref" id="footnote-ref-18"><a href="#footnote-18" aria-label="Footnote 18">18</a></sup>. Instead, the only MEM that exists on the LPU is on-chip memory, meaning the memory you see in the <a class="inline-jump" href="#lpu-forward-pass-animation">animation</a> is the only memory that exists.</p>
       <p>While working with transformers, we run into two specific bottlenecks: memory-bound workloads and compute-bound workloads.</p>
@@ -533,7 +537,7 @@
       <p>However, the nature of int8 did cause a couple of problems. Signed Int8 is in the range -128 &lt; x &lt; 127, and in traditional int8, there are no decimals. Meaning the range of values was super small (only 256 values in total) to represent individual features.</p>
       <p>We then researched numerical formats used for modern ML accelerators, and we came across the two most popular formats, floating-point &amp; integer-fixed-point.</p>
       <p>Floating-point-8 works like this:</p>
-      <figure class="media-block original-media"><div class="media-stage"><img src="draft1-originals/floating-point.png" alt="Floating-point-8 representation" loading="lazy" /></div></figure>
+      <figure class="media-block original-media numerics-media"><div class="media-stage"><img src="draft1-originals/fp8.png" alt="Floating-point-8 representation" loading="lazy" /></div></figure>
       <div class="number-conversion-example fp8-conversion" aria-label="Example converting 5.75 to floating-point-8">
         <h3>Example: converting 5.75 to floating-point-8</h3>
         <p>Binary uses only 0 and 1. To the left of the binary point, the places represent 1, 2, 4, 8, and so on. To the right, they represent \(\frac{1}{2}\), \(\frac{1}{4}\), \(\frac{1}{8}\), and so on.</p>
@@ -552,7 +556,7 @@
       <p>Therefore, floating-point math is really convenient for machine learning as it has a large numerical range! However, for how convenient it is, there are also many drawbacks. For starters, in 8-bit integers, a common multiply or add might be almost instant, whereas for floating-point it has to factor in signs, exponents, etc before multiply or add can be done. This makes the complexity of floating-point very high.</p>
       <p>This helped us realize that for this project a numerical format as complex as floating-point may be too “overkill.” We went on with it anyway, using the CVFPU library<sup class="footnote-ref" id="footnote-ref-21"><a href="#footnote-21" aria-label="Footnote 21">21</a></sup>. Upon our first step at synthesizing this design, we ran into many errors as this library was incompatible with our FPGA (despite working well on testbench simulations<sup class="footnote-ref" id="footnote-ref-22"><a href="#footnote-22" aria-label="Footnote 22">22</a></sup>).</p>
       <p>We then pivoted to fixed-point. Fixed-point numbers work differently; imagine having to represent the amount $12.34 in cents. You get 1234; however, you know that the cents will always be the 2 spots after a decimal. That is the motivation behind fixed points; the word “fixed” comes from the fact that there is a fixed place where the decimal value will be.</p>
-      <figure class="media-block original-media"><div class="media-stage"><img src="draft1-originals/fixed-point.png" alt="Fixed-point representation" loading="lazy" /></div></figure>
+      <figure class="media-block original-media numerics-media"><div class="media-stage"><img src="draft1-originals/fixed-point.png" alt="Fixed-point representation" loading="lazy" /></div></figure>
       <div class="number-conversion-example fixed-conversion" aria-label="Example converting 12.5 to the fixed-point format">
         <h3>Example: converting 12.5 to fixed-point</h3>
         <p>Fixed-point avoids storing a decimal point directly. Our format stores each value as a signed whole number, \(q\), and uses one signed shift exponent, \(e\), to tell the hardware where the binary point belongs.</p>

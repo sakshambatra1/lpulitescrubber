@@ -160,6 +160,16 @@ function setupSlideshow(root) {
     const defaultStageLabel = stage.getAttribute("aria-label");
     let drag = null;
 
+    function getBounds() {
+      const stageRect = stage.getBoundingClientRect();
+      const imageRect = image.getBoundingClientRect();
+      const minLeft = Math.max(0, imageRect.left - stageRect.left);
+      const minTop = Math.max(0, imageRect.top - stageRect.top);
+      const maxLeft = Math.max(minLeft, imageRect.right - stageRect.left - lens.offsetWidth);
+      const maxTop = Math.max(minTop, imageRect.bottom - stageRect.top - lens.offsetHeight);
+      return { stageRect, imageRect, minLeft, minTop, maxLeft, maxTop };
+    }
+
     function positionPanel() {
       if (!state.panelPosition) {
         lens.style.removeProperty("top");
@@ -167,11 +177,11 @@ function setupSlideshow(root) {
         lens.style.removeProperty("bottom");
         return;
       }
-      const stageRect = stage.getBoundingClientRect();
-      const maxLeft = Math.max(0, stageRect.width - lens.offsetWidth);
-      const maxTop = Math.max(0, stageRect.height - lens.offsetHeight);
-      lens.style.left = `${state.panelPosition.x * maxLeft}px`;
-      lens.style.top = `${state.panelPosition.y * maxTop}px`;
+      const { minLeft, minTop, maxLeft, maxTop } = getBounds();
+      const spanX = Math.max(0, maxLeft - minLeft);
+      const spanY = Math.max(0, maxTop - minTop);
+      lens.style.left = `${minLeft + state.panelPosition.x * spanX}px`;
+      lens.style.top = `${minTop + state.panelPosition.y * spanY}px`;
       lens.style.bottom = "auto";
     }
 
@@ -198,8 +208,11 @@ function setupSlideshow(root) {
 
     function showFromPointer(event) {
       const imageRect = image.getBoundingClientRect();
-      const x = (event.clientX - imageRect.left) / imageRect.width;
-      const y = (event.clientY - imageRect.top) / imageRect.height;
+      if (!imageRect.width || !imageRect.height) return;
+      const clampedX = Math.min(imageRect.right, Math.max(imageRect.left, event.clientX));
+      const clampedY = Math.min(imageRect.bottom, Math.max(imageRect.top, event.clientY));
+      const x = (clampedX - imageRect.left) / imageRect.width;
+      const y = (clampedY - imageRect.top) / imageRect.height;
       showAt(x, y);
     }
 
@@ -220,11 +233,29 @@ function setupSlideshow(root) {
       }
     }
 
+    let isSelecting = false;
     stage.addEventListener("pointerdown", (event) => {
       if (!state.enabled || (event.pointerType === "mouse" && event.button !== 0)) return;
+      if (event.target.closest(".magnifier-lens")) return;
+      event.preventDefault();
+      isSelecting = true;
+      showFromPointer(event);
+      stage.setPointerCapture(event.pointerId);
+    });
+
+    stage.addEventListener("pointermove", (event) => {
+      if (!state.enabled || !isSelecting) return;
       event.preventDefault();
       showFromPointer(event);
     });
+
+    const endSelecting = (event) => {
+      if (!isSelecting) return;
+      isSelecting = false;
+    };
+    stage.addEventListener("pointerup", endSelecting);
+    stage.addEventListener("pointercancel", endSelecting);
+    stage.addEventListener("lostpointercapture", endSelecting);
 
     lens.addEventListener("pointerdown", (event) => {
       if (!state.enabled || (event.pointerType === "mouse" && event.button !== 0)) return;
@@ -250,16 +281,16 @@ function setupSlideshow(root) {
       if (!drag || event.pointerId !== drag.pointerId) return;
       event.preventDefault();
       event.stopPropagation();
-      const stageRect = stage.getBoundingClientRect();
-      const maxLeft = Math.max(0, stageRect.width - lens.offsetWidth);
-      const maxTop = Math.max(0, stageRect.height - lens.offsetHeight);
-      const left = Math.min(maxLeft, Math.max(0, drag.startLeft + event.clientX - drag.startX));
-      const top = Math.min(maxTop, Math.max(0, drag.startTop + event.clientY - drag.startY));
+      const { minLeft, minTop, maxLeft, maxTop } = getBounds();
+      const left = Math.min(maxLeft, Math.max(minLeft, drag.startLeft + event.clientX - drag.startX));
+      const top = Math.min(maxTop, Math.max(minTop, drag.startTop + event.clientY - drag.startY));
       lens.style.left = `${left}px`;
       lens.style.top = `${top}px`;
+      const spanX = Math.max(0, maxLeft - minLeft);
+      const spanY = Math.max(0, maxTop - minTop);
       state.panelPosition = {
-        x: maxLeft ? left / maxLeft : 0,
-        y: maxTop ? top / maxTop : 0,
+        x: spanX ? (left - minLeft) / spanX : 0,
+        y: spanY ? (top - minTop) / spanY : 0,
       };
     });
 
